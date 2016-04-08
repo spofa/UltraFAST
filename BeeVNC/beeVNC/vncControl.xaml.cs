@@ -213,11 +213,24 @@ namespace beeVNC
 
 				if (Bitmap == null)
 				{
+					//NET function to create and empty bitmap
 					Bitmap = new WriteableBitmap(newScreens.Rects.First().Width, newScreens.Rects.First().Height, 96, 96, PixelFormats.Bgr32, null);
 					image1.Source = Bitmap;
 				}
+				
+				//Update each rectangle to Bitmap
 				foreach (var newScreen in newScreens.Rects)
+				{
+					//Write rectangle to bitmap (faster method)
+					//: WritePixels Method (Int32Rect, Array, Int32, Int32, Int32)
+					//sourceRect - The rectangle in sourceBuffer to copy
+					//sourceBuffer - The input buffer used to update the Bitmap
+					//sourceBufferStride - Stride in byte (see 4 as 32bpp - no pellete image)
+					//destinationX, destinationY - position in bitmap (top, left)
 					Bitmap.WritePixels(new Int32Rect(0, 0, newScreen.Width, newScreen.Height), newScreen.PixelData, newScreen.Width * 4, newScreen.PosX, newScreen.PosY);
+				}
+				
+				//Ivalidate image so it'll be refreshed next
 				image1.InvalidateVisual();
 
 			}
