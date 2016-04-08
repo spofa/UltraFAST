@@ -1,0 +1,6 @@
+VNCSharp: VncSharp is a Open Source (GPL) VNC Client Library and custom Windows Forms Control. It implements VNC Remote Framebuffer (RFB) Protocol for the .NET Framework. [https://github.com/humphd/VncSharp]
+
+BeeVNC: https://beevnc.codeplex.com/
+
+NVNC: https://github.com/T1T4N/NVNC
+https://nvnc.codeplex.com/

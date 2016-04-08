@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>VncSharp: A .NET VNC Client Library</title>
+	<link rel="stylesheet" href="VncSharp%20%20A%20.NET%20VNC%20Client%20Library_files/VncSharpStyleSheet.css" type="text/css">
+</head>
+
+<body id="top">
+
+	<div id="nav">
+		
+		<h2>VncSharp</h2>
+		<ul>
+			<li><a href="https://cdot.senecacollege.ca/projects/vncsharp/index.html">Main</a></li>
+			<li><a href="https://cdot.senecacollege.ca/projects/vncsharp/doc.html">Documentation</a></li>
+			<li><a href="https://cdot.senecacollege.ca/projects/vncsharp/screenshots.html">Screenshots</a></li>
+			<li><a href="https://cdot.senecacollege.ca/projects/vncsharp/download.html">Download</a></li>
+			<li><a href="mailto:david.humphrey@senecac.on.ca">Contact</a></li>
+		</ul>
+	</div>
+
+	<div id="main">
+
+		<h5><a class="image" href="https://cdot.senecacollege.ca/projects/vncsharp/index.html"><img src="VncSharp%20%20A%20.NET%20VNC%20Client%20Library_files/logo.gif" alt="VncSharp Logo"></a></h5>
+	
+		<h1 class="noline">VncSharp: Documentation</h1>
+	
+		<p>The following is a guide to getting started using the <strong>VncSharp RemoteDesktop</strong> control.  Instructions are provided for <strong>Visual Studio.NET</strong> users as well as for those using <strong>Command-Line compilers</strong>.</p>
+
+		<p>You are encouraged to download the example application source, which is available in a <a href="https://cdot.senecacollege.ca/projects/vncsharp/vncsharpexample-csharp-1.0-src.zip">C# version</a> or <a href="https://cdot.senecacollege.ca/projects/vncsharp/vncsharpexample-vb-1.0-src.zip">VB.NET version</a>.
+  This example application demonstrates the main uses of VncSharp's 
+RemoteDesktop control.  If you are interested in more details, please 
+consult the RemoteDesktop.cs file itself, which is well documented.
+
+		</p><h3>1a) Setup for Use with Visual Studio.NET</h3>
+		<ul>
+			<li>Create a new C# or VB.NET <strong>Windows Application</strong> project.</li>
+			<li>Right-click inside the <strong>Toolbox</strong> and choose <strong>Choose Items...</strong> or <strong>Add/Remove Items...</strong> depending on your version of Visual Studio--do this under the General tab so as not to clutter your Windows Forms tab.</li>
+			<li>Click <strong>Browse...</strong> and locate the VncSharp.dll file.  Or, if you've registered VncSharp in the GAC, you can scroll down in the existing list.</li>
+			<li>In either case, you now need to locate the <strong>RemoteDesktop</strong> control and make sure it is checked.</li>
+			<li>Click <strong>OK</strong>, and you should see the <strong>RemoteDesktop icon</strong> in the <strong>Toolbox.</strong></li>
+			<li><strong>Drag-and-drop</strong> the RemoteDesktop control to your 
+Form.  After resizing the control, you will see a standard Windows 
+desktop.  This image is only displayed at design time and will be 
+replaced with the remote desktop image once the application is run.</li>
+			<li>Change the <strong>RemoteDesktop</strong> control's <strong>Dock Style</strong> to <strong>Fill</strong> in the <strong>Properties Window</strong>.</li>
+			<li>Press <strong>F7</strong> to view the Code for your Form.</li>
+			<li>Include the <strong>VncSharp Namespace</strong> at the top of your source file by adding the code: <strong>using VncSharp;</strong></li>
+		</ul>
+
+
+		<h3>1b) Setup for Use with Command-Line Compilers (csc, mcs, etc.)</h3>
+		<ol>
+			<li>You must add a run-time reference to the VncSharp.dll file by including the following switch in your compiler options: <strong>/res:\path\to\VncSharp.dll</strong></li>
+			<li>Include the <strong>VncSharp Namespace</strong> at the top of your source file by adding the code: <strong>using VncSharp;</strong></li>
+			<li>In a Windows Forms derived class, add a <strong>member variable</strong> of type <strong>VncSharp.RemoteDesktop</strong> and <strong>instantiate</strong> this object in the form's <strong>constructor</strong>.</li>
+		</ol>
+
+
+		<h3>2) Coding the RemoteDesktop Control</h3>
+
+		<p>The best way to learn about how to code the RemoteDesktop control is to examine the example application (<a href="https://cdot.senecacollege.ca/projects/vncsharp/vncsharpexample-csharp-1.0-src.zip">C# version</a> or <a href="https://cdot.senecacollege.ca/projects/vncsharp/vncsharpexample-vb-1.0-src.zip">VB.NET version</a>)
+ and look at the RemoteDesktop.cs file itself.  If you are interested, 
+you can also explore the classes used by the RemoteDesktop, which handle
+ low-level RFB protocol messages.  These are useful if you wish to build
+ an application that does something custom on top of the VNC protocol 
+itself.</p>
+	</div>
+
+</body></html>
