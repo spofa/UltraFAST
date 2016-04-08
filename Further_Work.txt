@@ -1,0 +1,39 @@
+------------------------------------------------
+Handshake/Transfer Improvements
+------------------------------------------------
+^ Tile update is only sent from the server to the client in response to an explicit request from the client.
+
+^ Update request types
+(A): Full request [all tiles]
+(B): Send update  [changed tiles 1,3,7]
+(C): Fetch tile(j)[send jth]   
+
+^ If many pending update requests comes while sending, then server can only send reply to few [[maintaining 10FPS or like that]]
+
+^ Capture only when requested (reduce server load), keep a capture valid for TFrame sec. Don't capture if already valid is there to speed up. 
+
+^ If a tile is changed (not-expired): qualify for sending to client (A, B, C)
+^ If a tile is changed (expired): recapture tile and re-process
+^ If a tile is not changed (not-expired): send on (A, C if j==thistile)
+^ If a tile is not changed (expired):recapture tile and re-process
+
+^ We've to measure [number of tiles, tiles/second and bytes/second] and adjust number of tiles to get fastest handshake (we should be able to get around 2-3 screen transfer per second) for things to work in real network
+
+------------------------------------------------
+Painting Improvements
+------------------------------------------------
+^ We've send collection of tiles and not tile by tile. This will reduce number to packets on communication bus, but need to see if library can handle large data
+^ Tiles can be painted on new bitmap (copy from existing) first then bitmap to screen to save rendering time. It can invalidate main image so that form can update it in next go.
+^ Tile painting event can be put on UI thread once received from communication channel (yet it should get expire also -- why paint an old tile if update is available for same in queue)
+
+------------------------------------------------
+Encoding And Data Reduction
+------------------------------------------------
+^ 32bpp to 8bpp and 8bpp to 32bpp fast algorithm without loss of quality to be integrated
+(preferably this should be without pellet as its computation and transmission will slow things)
+-- my rest of the project will get broken with 8bpp as currently on 32bpp, this should not increase the effort
+^ See how VncClient does this by encoding etc.
+
+
+
+
