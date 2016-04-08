@@ -235,7 +235,8 @@ namespace VncSharp
 		}
 
 		/// <summary>
-		/// When communicating with the VNC Server, bytes are used to represent many of the values above.  However, internally it is easier to use Integers.  This method provides a translation between the two worlds.
+		/// When communicating with the VNC Server, bytes are used to represent many of the values above.  However, internally it is easier to use Integers.  
+		/// This method provides a translation between the two worlds.
 		/// </summary>
 		/// <returns>A byte array of 16 bytes containing the properties of the framebuffer in a format ready for transmission to the VNC server.</returns>
 		public byte[] ToPixelFormat()

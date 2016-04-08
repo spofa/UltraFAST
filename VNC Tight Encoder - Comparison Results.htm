@@ -1,0 +1,498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- -*- fill-column: 97 -*- -->
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>VNC Tight Encoder - Comparison Results</title>
+  </head>
+  
+  <body alink="#FF4040" background="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/vnc-bg.htm" bgcolor="#F8EECB" link="#9A1614" vlink="#8A7634">
+    <center>
+      <h1>VNC Tight Encoder - Comparison Results</h1>
+
+      <table border="0" cellpadding="8" cellspacing="0" width="70%">
+        <tbody><tr valign="middle">
+          <td width="50%"><img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/space.jpg" hspace="8">
+            <b><font size="+1">Local documents:</font></b><br>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/larrow.jpg" hspace="8">
+            <a href="http://www.tightvnc.com/archive/index.html">Main page - general information</a><br>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/larrow.jpg" hspace="8">
+            <a href="http://www.tightvnc.com/archive/download.html">Download area</a><br>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/larrow.jpg" hspace="8">
+            <b>Comparison results</b><br>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/larrow.jpg" hspace="8">
+            <a href="http://www.tightvnc.com/archive/WhatsNew.txt">What's New</a>, <a href="http://www.tightvnc.com/archive/ChangeLog.txt">ChangeLog</a><br>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/larrow.jpg" hspace="8">
+            <a href="http://www.tightvnc.com/archive/docs.html">The bits of documentation</a><br>
+          </td>
+          <td align="right" width="50%"><b><font size="+1">External links:</font></b>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/space.jpg" hspace="8"><br>
+            <a href="http://www.uk.research.att.com/vnc/">Official VNC homepage</a>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/rarrow.jpg" hspace="8"><br>
+            <a href="http://www.developvnc.org/">TridiaVNC developers site</a>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/rarrow.jpg" hspace="8"><br>
+            <a href="http://www.gnu.org/">The GNU project</a>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/rarrow.jpg" hspace="8"><br>
+            <a href="http://dogma.net/DataCompression/">About data compression</a>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/rarrow.jpg" hspace="8"><br>
+            <a href="http://www.cosource.com/?aid=1412">Cosource.com site</a>
+            <img src="VNC%20Tight%20Encoder%20-%20Comparison%20Results_files/rarrow.jpg" hspace="8"><br>
+          </td>
+        </tr>
+      </tbody></table>
+      </center>
+    <p></p><hr>
+
+    <h2>Preface</h2>
+    <blockquote>
+      <p>
+        Here you can see how new <b>Tight-1.1</b> encoder operates as compared to older
+        <b>Hextile</b> and <b>Zlib</b> encoders. Zlib encoder was obtained from the <a href="http://www.developvnc.org/logged-in/downloadnow/index.html">TridiaVNC source
+        archive</a> for Unix. Results for older version of the Tight encoder are also shown here
+        ("<b>Tight-1.0</b>" column). The "<b>Tight-1.1L</b>" abbreviation
+        means Tight-1.1 encoder with new "gradient" filter turned off (this can be done
+        with <tt>-lazytight</tt> Xvnc command-line option). Main competitor is Zlib encoder, and
+        that is why improvements in compression ratio for the Tight-1.1 encoder against Zlib are
+        emphasized using <font color="#BF0000">red color</font> for text.
+      </p><p>
+        In the <a href="#bottom">bottom</a> of this page you can find more information on testing
+        and other related issues. Note that all test sessions as well as complete source code for
+        testing utility are freely available for everybody. But you should be aware that some of
+        test sessions are huge downloads and they may reside behind a very slow Internet
+        connection.
+    </p></blockquote>
+
+    <h2>The results</h2>
+    <blockquote>
+      <p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 1: <a href="http://www.tightvnc.com/archive/sessions/bugzilla-16.rfb.bz2">bugzilla-16.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 439,285 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>32,729,254</td><td>1,590,721</td><td>652,572</td><td>518,112</td><td>499,140</td><td>499,140</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>98.47%</td><td>68.62%</td><td><font color="#BF0000">23.51%</font></td><td>3.66%</td><td>-</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>1.3</td><td>25.8</td><td>18.9</td><td>14.8</td><td>14.9</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>This is 16-bit-color test session, presenting operations in Netscape Navigator
+            window on KDE desktop. Browser is showing <a href="http://bugzilla.redhat.com/bugzilla/">Bugzilla Web site</a>. Original session
+            is <a href="http://people.redhat.com/twaugh/ftp/rfbproxy/bugzilla.rfb.bz2">available</a>
+            from the <a href="http://people.redhat.com/twaugh/rfbproxy/">rfbproxy</a> Web
+            pages.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>Test shows good compression performance achieved by the Tight Encoder on typical
+            session where not many full-color areas can be found on the screen. Most improvement
+            in both compression ratio and compression time is caused by replacing true-color RGB
+            samples with indexed colors before compression.<br> Due to the problem found in the
+            Tight-1.0 encoder, the compression ratio achieved by Tight-1.1 (where the problem has
+            been fixed) is a little better than for version 1.0 of the encoder. Compression time
+            has been decreased for Tight-1.1 vs. Tight-1.0 due to speed optimizations in 1.1
+            release. Results for Tight-1.1L and Tight-1.1 do not differ because the latter
+            encoder has not found any areas suitable for preprocessing with the
+            "gradient" filter.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Here you can find original test results for this session, where you can see
+            compressed data sizes separately for each rectangle of screen updates: <a href="http://www.tightvnc.com/archive/results/bugzilla-16-logs.tar.bz2">bugzilla-16-logs.tar.bz2</a> (download size:
+            144,024 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 2: <a href="http://www.tightvnc.com/archive/sessions/compilation-16.rfb.bz2">compilation-16.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 252,800 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>111,178,662</td><td>2,788,259</td><td>1,836,495</td><td>476,738</td><td>454,748</td><td>454,748</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>99.59%</td><td>83.69%</td><td><font color="#BF0000">75.24%</font></td><td>4.61%</td><td>-</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>5.2</td><td>231.5</td><td>29.7</td><td>21.5</td><td>21.3</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>This 16-bit-color session shows Xvnc compilation process started in xterm window
+            maximized to occupy almost full screen. The window manager is IceWM.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>This test session is prepared in order to show Tight Encoder efficiency on
+            compressing two-color (monochrome) screen areas. We see that compression ratio on
+            such data may be four times (!) better than it stands for pure Zlib compression.
+            Compression speed improvement is even more impressive: Tight encoder is about ten
+            times faster on this session as compared to Zlib encoder. Also note raw data size:
+            it's about 106 MBytes, and it's only 444 KBytes for Tight-1.1 encoding (compression
+            ratio is 244.48).<br>
+            Such improvement in both compression ratio and speed is caused by replacing 16-bit
+            true-color pixel values with 1-bit indices in 2-color palette. So the input stream
+            size for final zlib compressor may be up to 16 times smaller. This allows zlib
+            library to use its small (32K) dictionary much more efficiently. And compression
+            speed is increased dramatically just because there is much less data to
+            compress.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/compilation-16-logs.tar.bz2">compilation-16-logs.tar.bz2</a> (download size:
+            12,392 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 3: <a href="http://www.tightvnc.com/archive/sessions/bars-16.rfb.bz2">bars-16.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 4,746,651 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>32,880,890</td><td>11,812,296</td><td>3,632,612</td><td>3,852,823</td><td>3,482,707</td><td>3,191,666</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>90.29%</td><td>72.98%</td><td><font color="#BF0000">12.14%</font></td><td>17.16%</td><td>8.36%</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>2.6</td><td>74.7</td><td>62.6</td><td>45.8</td><td>52.3</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>16-bit test session demonstrating intensive use of full-color graphics. It's a
+            WindowMaker desktop with wallpaper enabled. A photo image is opened in a Gimp window,
+            then some manipulations are performed on that window.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>This test basically shows two things: certain problems with Tight-1.0 encoder on
+            full-color images and the efficiency of new "gradient" filter on suitable
+            image data. You can see that Tight-1.0 compression ratio was worse than Zlib results
+            and that compression is improved in version 1.1 even when "gradient"
+            filtering is disabled. And enabling such filtering gives us about 8% of extra
+            bandwidth savings while compression is a little slower.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/bars-16-logs.tar.bz2">bars-16-logs.tar.bz2</a> (download size:
+            122,352 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 4: <a href="http://www.tightvnc.com/archive/sessions/kde-hearts-16.rfb.bz2">kde-hearts-16.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 3,130,374 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>22,901,336</td><td>13,711,535</td><td>2,011,507</td><td>2,381,792</td><td>1,787,521</td><td>1,788,952</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>92.19%</td><td>86.95%</td><td><font color="#BF0000">11.06%</font></td><td>24.89%</td><td>-0.08%</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>2.4</td><td>26.1</td><td>22.8</td><td>17.5</td><td>17.5</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>16-bit test session demonstrating intensive use of full-color graphics used as
+            background for icons and text. It is KDE desktop with wallpaper (coloured_hearts.jpg)
+            enabled. Several kfm windows with different background images are opened, some simple
+            manipulations are performed on these windows.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>Again, this test shows Tight-1.0 problems and Tight-1.1 enhancements. Tight-1.0
+            results are poor as compared to Zlib encoder, Tight-1.1 results are much better. This
+            session contains much data that is "inconvenient" for the
+            "gradient" filter. And you can see that enabling this filter increases
+            compressed data size a bit. But the difference is negligible because the code
+            detecting still-image areas prevents such filtering in most doubtful cases.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/kde-hearts-16-logs.tar.bz2">kde-hearts-16-logs.tar.bz2</a> (download size:
+            109,028 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 5: <a href="http://www.tightvnc.com/archive/sessions/freshmeat-8.rfb.bz2">freshmeat-8.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 1,716,336 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>107,621,635</td><td>4,779,238</td><td>2,635,469</td><td>2,345,674</td><td>2,265,923</td><td>2,265,923</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>97.89%</td><td>52.59%</td><td><font color="#BF0000">14.02%</font></td><td>3.40%</td><td>-</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>7.4</td><td>147.5</td><td>98.0</td><td>86.6</td><td>86.2</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>This 8-bit-color (BGR233) session shows real dial-up session when a person is
+            fetching his mail, reading news at freshmeat.net, searching there an utility he need,
+            downloading it etc.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>This session presents a bit of real computer usage. The color depth is 8 bits and
+            the difference in compression ratios between Zlib and Tight is not very impressive.
+            That is because at such color depth there is really not much space for improvement.
+            However, note that the compression speed is still much higher as compared to Zlib and
+            14% decrease in data size is also not too bad. Looking at the compressed data size,
+            keep in mind that this session is long enough: it's about 8 minutes of continuous
+            activity.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/freshmeat-8-logs.tar.bz2">freshmeat-8-logs.tar.bz2</a> (download size:
+            785,370 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 6: <a href="http://www.tightvnc.com/archive/sessions/slashdot-24.rfb.bz2">slashdot-24.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 3,073,017 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>271,717,540</td><td>8,716,348</td><td>4,487,303</td><td>3,348,609</td><td>3,297,038</td><td>3,297,038</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>98.79%</td><td>62.17%</td><td><font color="#BF0000">26.53%</font></td><td>1.54%</td><td>-</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>5.7</td><td>341.8</td><td>149.4</td><td>134.2</td><td>134.2</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>24-bit-color session showing a real dial-up session when a person is reading news
+            at slashdot.org, generating a ChangeLog for CVS tree, editing it in XEmacs, fetching
+            his mail and more. It's similar to the freshmeat-8 test session, but now color depth
+            is 24 bits and there is more different types of activity seen on the screen. The
+            session is about 6 minutes 30 seconds long.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+
+          <td>The compression ratios are somewhat typical for real-world usage. The difference
+            between Zlib and Tight efficiency is notable. Main reason is that many screen updates
+            can be converted from true-color to indexed colors using palette with small number of
+            colors. Another reason is that the tight compression is well-optimized for 24-bit
+            sessions; it even converts 32-bit pixel values with one of bytes set to zero (as they
+            are presented in RFB protocol) to 3-byte RGB samples.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/slashdot-24-logs.tar.bz2">slashdot-24-logs.tar.bz2</a> (download size:
+            415,219 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 7: <a href="http://www.tightvnc.com/archive/sessions/photos-24.rfb.bz2">photos-24.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 8,187,724 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>25,569,676</td><td>16,781,057</td><td>10,657,746</td><td>9,830,852</td><td>9,966,649</td><td>6,130,479</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>76.02%</td><td>63.47%</td><td><font color="#BF0000">42.48%</font></td><td>37.64%</td><td>38.49%</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>1.6</td><td>24.1</td><td>14.6</td><td>14.1</td><td>35.3</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+          <td>Test session demonstrating intensive use of full-color graphics in 24-bit mode.
+            It is IceWM desktop with photo image used as wallpaper. Another photo is viewed in a
+            Gimp window.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+
+          <td>The results show great improvement (about 40%) in compression ratio when the
+            "gradient" filter is used on suitable data. When color depth is 24 bits,
+            this filter can give greatest compression improvements. But you can see that the cost
+            we pay for that is much slower compression.<br>
+            The second issue seen in results above is that the Tight-1.1L encoder operates a
+            little worse than Tight-1.0 implementation. It's a rare situation, but it's possible.
+            The reason is difference in algorithms used to split large screen areas into smaller
+            sub-rectangles. The algorithm used in 1.1 version typically operates better, but that
+            is not the point for all possible situations.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/photos-24-logs.tar.bz2">photos-24-logs.tar.bz2</a> (download size:
+            32,044 bytes).</td>
+        </tr>
+      </tbody></table>
+
+      </p><p>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr>
+          <td rowspan="2" align="center"><b>Test session 8: <a href="http://www.tightvnc.com/archive/sessions/kde-hearts-24.rfb.bz2">kde-hearts-24.rfb</a></b><br>
+            <font size="-1">(bzip2-compressed: 5,800,212 bytes)</font></td>
+          <th colspan="6" bgcolor="#FFD8AB">Encodings</th>
+        </tr><tr align="right" bgcolor="#FFD8AB">
+          <th>Raw</th><th>Hextile</th><th>Zlib</th><th>Tight-1.0</th><th>Tight-1.1L</th><th>Tight-1.1</th>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Data size in screen updates, bytes</th>
+          <td>36,152,860</td><td>20,052,400</td><td>2,066,224</td><td>2,242,507</td><td>1,744,684</td><td>1,790,153</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Bandwidth savings, Tight-1.1 vs. others</th>
+          <td>95.05%</td><td>91.07%</td><td><font color="#BF0000">13.36%</font></td><td>20.17%</td><td>-2.61%</td><td>-</td>
+        </tr><tr align="right" bgcolor="#FFE8AF">
+          <th align="left" bgcolor="#FFD8AB">Compression time, seconds</th>
+          <td>-</td><td>2.4</td><td>46.0</td><td>27.2</td><td>20.4</td><td>20.6</td>
+        </tr>
+      </tbody></table>
+      <table border="0" cellpadding="4" cellspacing="4" width="85%">
+        <tbody><tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top" width="15%">Description:</th>
+
+          <td>24-bit test session demonstrating intensive use of full-color graphics used as
+            background for icons and text. The session is very similar to kde-hearts-16. It is
+            the same KDE desktop with wallpaper enabled. Several kfm windows with different
+            backgrounds are opened, some simple manipulations are performed on these
+            windows.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">Explanations:</th>
+          <td>The results are similar to those for the kde-hearts-16 session. It's clear that not
+            every full-color image is a good candidate for the filtering algorithm implemented in
+            the Tight-1.1 encoding even when color depth is 24 bits. Image type detection routine
+            tries to prevent applying the filter when it thinks the data is not suitable for it,
+            but this is not 100%-reliable, so we've got a little loss both is compression ratio
+            and speed when the filtering is on.</td>
+        </tr>
+        <tr bgcolor="#FFE8AF">
+          <th align="right" bgcolor="#FFD8AB" valign="top">More details:</th>
+          <td>Original test results for this session: <a href="http://www.tightvnc.com/archive/results/kde-hearts-24-logs.tar.bz2">kde-hearts-24-logs.tar.bz2</a> (download size:
+            86,154 bytes).</td>
+        </tr>
+      </tbody></table>
+    </p></blockquote>
+
+    <a name="bottom"><h2>More information on testing</h2>
+    </a><blockquote><a name="bottom">
+      <p>
+        </p><h3>Test sessions</h3>
+      </a><p><a name="bottom">
+        Test sessions were recorded with </a><a href="http://people.redhat.com/twaugh/rfbproxy/">rfbproxy</a>, a program which can sit
+        between VNC server and client and is able to record all data received from the server
+        into a local file. After a session is recorded, it can be played back for remote client
+        with the same program. All tests were recorded under Linux using standard Xvnc 3.3.3r1 as
+        VNC server. The only encoding scheme used in test sessions was "hextile"
+        encoding. So you don't have to run VNC software with support for tight encoding if you
+        wish to look at test session contents.
+      </p><p>
+        Note that the Unix version of vncviewer cannot be forced to use 16-bit or 32-bit (24-bit)
+        pixel formats; it uses your default screen format as reported by the X server. It means
+        you won't be able to look at 16-bit test sessions on 32-bit display and vice versa. So
+        make sure you have set appropriate color depth for your X Window System installation
+        before viewing a session with the Unix vncviewer. 8-bit sessions can be played back
+        regardless of color depth (if there are enough colors), but you must use -bgr233
+        vncviewer option to view such sessions.
+      </p><p>
+        </p><h3>The testing</h3>
+      <p>
+        The testing has been performed on a Pentium-II machine (350MHz CPU, 512K CPU cache) with
+        64M RAM under GNU/Linux operating system (kernel-2.2.10-ac9, glibc-2.0.7 - yes, it's not
+        very up-to-date).
+      </p><p>
+        First, saved test sessions were distilled using small <a href="http://www.tightvnc.com/archive/download/fbs-dump.c.gz">fbs-dump.c</a> utility. This utility removes control
+        information from test sessions saved with <a href="http://people.redhat.com/twaugh/rfbproxy/">rfbproxy</a>, producing files containing
+        only RFB messages received from the server (see <a href="http://www.uk.research.att.com/vnc/rfbproto.pdf">RFB protocol specification</a>).
+        This makes message parsing much easier for testing utility.
+      </p><p>
+        Finally, specially written <a href="http://www.tightvnc.com/archive/download/compare-encodings-0.2.tar.gz">compare-encodings</a> utility was used to
+        produce comparison results. This utility reads hextile-encoded framebuffer updates from a
+        file, decodes them, encodes each rectangle with a set of different encoders and dumps
+        statistics to the standard output. Source files for encoders are included unmodified from
+        the VNC distributions (not true for zlib, where I had to make a pair of changes to adapt
+        it for the Xvnc-3.3.3r1, but these changes do not affect performance in any way). Note
+        that compression speed is not reported by the testing utility. Timing results were
+        obtained by running modified versions of the utility separately for each encoding. Be
+        aware that the testing utility was not aimed to be comfortable at its usage. No help for
+        options, no warranty, configuration via #define directives or via renaming source files,
+        etc. It's probably for use by programmers only.
+      </p><p>
+        The last thing to say here: if you'll be lucky to record a session where the latest
+        version of tight encoder shows poor performance as compared to pure zlib compression,
+        please make that session available for me if possible. This will help me to make the
+        encoder better and its users happier. :-)
+    </p></blockquote>
+
+    <p></p><hr>
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tbody><tr>
+        <td align="center" width="25%"></td>
+        <td align="center" width="50%"><address><font size="-1">
+<!-- hhmts start -->
+Last modified: Fri Jan 12 04:32:09 KRAT 2001
+<!-- hhmts end -->
+            </font><br><b>Const Kaplinsky:</b>
+            <a href="mailto:const@ce.cctpu.edu.ru">e-mail</a>,
+            <a href="http://www.tightvnc.com/archive/notavailable.html">brief resume</a>.
+          </address></td>
+        <td align="center" width="25%">
+        </td>
+      </tr>
+    </tbody></table>
+
+  
+
+</body></html>

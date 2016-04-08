@@ -10,7 +10,7 @@ Handshake/Transfer Improvements
 
 ^ If many pending update requests comes while sending, then server can only send reply to few [[maintaining 10FPS or like that]]
 
-^ Capture only when requested (reduce server load), keep a capture valid for TFrame sec. Don't capture if already valid is there to speed up. 
+^ Capture only when requested (reduce server load), keep a capture valid for TFrame sec. Don't capture if already valid capture is there to speed up. 
 
 ^ If a tile is changed (not-expired): qualify for sending to client (A, B, C)
 ^ If a tile is changed (expired): recapture tile and re-process
@@ -22,7 +22,7 @@ Handshake/Transfer Improvements
 ------------------------------------------------
 Painting Improvements
 ------------------------------------------------
-^ We've send collection of tiles and not tile by tile. This will reduce number to packets on communication bus, but need to see if library can handle large data
+^ We've send collection of tiles and not tile by tile. This will reduce number to packets on communication bus, but need to see if library can handle large data.
 ^ Tiles can be painted on new bitmap (copy from existing) first then bitmap to screen to save rendering time. It can invalidate main image so that form can update it in next go.
 ^ Tile painting event can be put on UI thread once received from communication channel (yet it should get expire also -- why paint an old tile if update is available for same in queue)
 
@@ -33,7 +33,172 @@ Encoding And Data Reduction
 (preferably this should be without pellet as its computation and transmission will slow things)
 -- my rest of the project will get broken with 8bpp as currently on 32bpp, this should not increase the effort
 ^ See how VncClient does this by encoding etc.
+^ See (http://www.tightvnc.com/archive/compare.html), first pellet creation then compressing index will reduce size a lot. But how we can send pellet with each tile of 2^32 (size will be large) for pellete of 255 quality will be bad. Maybe compressed indexes and pellets will do
+^ 
 
+------------------------------------------------
+SAMPLES OF PAINTING CODE (BEEVNC)
+------------------------------------------------
+!!! FORM UI
+<UserControl x:Class="beeVNC.vncControl">
+    <Grid>
+        <Image Name="image1" Stretch="None" />
+    </Grid>
+</UserControl>
 
+!!! IMAGE UPDATE CODE
+private void UpdateImage(ScreenUpdateEventArgs newScreens)
+{
+	try
+	{
+		if (newScreens.Rects.Count == 0)
+			return;
+		lastUpdate = DateTime.Now;
 
+		if (Bitmap == null)
+		{
+			//NET function to create and empty bitmap
+			Bitmap = new WriteableBitmap(newScreens.Rects.First().Width, newScreens.Rects.First().Height, 96, 96, PixelFormats.Bgr32, null);
+			image1.Source = Bitmap;
+		}
+		
+		//Update each rectangle to Bitmap
+		foreach (var newScreen in newScreens.Rects)
+		{
+			//Write rectangle to bitmap (faster method)
+			//: WritePixels Method (Int32Rect, Array, Int32, Int32, Int32)
+			//sourceRect - The rectangle in sourceBuffer to copy
+			//sourceBuffer - The input buffer used to update the Bitmap
+			//sourceBufferStride - Stride in byte (see 4 as 32bpp - no pellete image)
+			//destinationX, destinationY - position in bitmap (top, left)
+			Bitmap.WritePixels(new Int32Rect(0, 0, newScreen.Width, newScreen.Height), newScreen.PixelData, newScreen.Width * 4, newScreen.PosX, newScreen.PosY);
+		}
+		
+		//Ivalidate image so it'll be refreshed next
+		image1.InvalidateVisual();
 
+	}
+	catch (Exception)
+	{
+		Console.WriteLine();
+		throw;
+	}
+}
+
+!!! IMAGE PAINTING ON RECIEVE IN BACKGROUND THREAD
+
+_Connection.ScreenUpdate += new RfbClient.ScreenUpdateEventHandler(_Connection_ScreenUpdate);
+
+private void _Connection_ScreenUpdate(object sender, ScreenUpdateEventArgs e)
+{
+	if (_Connection != null && _Connection.IsConnected == true)
+	{
+		image1.Dispatcher.Invoke(new UpdateScreenCallback(UpdateImage), new object[] { e });
+	}
+}
+
+------------------------------------------------
+SAMPLES OF PAINTING CODE (VNCSHARP)
+------------------------------------------------
+VncEventArgs
+{
+	IDesktopUpdater updater;
+}
+
+//Bitmap 'desktop' drawn at UpdateRectangle on Server Bitmap when tile updates are received
+IDesktopUpdater
+{
+	void Draw(Bitmap desktop);
+	Rectangle UpdateRectangle {get;}
+}
+
+//Client polling for updates
+private void GetRfbUpdates()
+{
+	//Read all rectangles (tiles) from server !!! with encoding !!!
+	for (int i = 0; i < rectangles; ++i) 
+	{
+		//Read all rectangles (tiles) from server !!! with encoding !!!
+        rfb.ReadFramebufferUpdateRectHeader(out rectangle, out enc);
+		
+		//Create a decoder object to decode the stuff (rectangle)
+		//[[EncodedRectangle is Base Class]
+		EncodedRectangle er = factory.Build(rectangle, enc);
+		er.Decode();
+		
+		//Pass Encoder to UI thread (Encoder will draw also) 
+		//Synchronize this event with the UI thread.
+		target.Invoke(VncUpdate, new object[] { this, new VncEventArgs(er) });
+		
+		//VncUpdate ->(Raises)-> VncUpdateHandler(VncEventArgs)
+	}
+}
+
+//EncodedRectangleFactory Class
+: Instantiate RawRectangle, CopyRectRectangle, RreRectangle, CoRreRectangle, HextileRectangle, & ZrleRectangle
+
+//EncodedRectangle Base Class -- this one decodes, encodes, draws also
+: Houses a 'framebuffer' object (this hold pixels[] array in GDI+ RGBA, and other image data like bpp, redshift, greenmax etc)
+: Houses a 'rectangle' object where it draws after decoding image
+: Houses a 'preader' object which will return each pixel as GDI+ RGBA based on bpp (8, 16, 32)
+: void Draw(Bitmap desktop) copies integer (4byte GDI+ RGBA) in framebuffer[i] to 'desktop' Bitmap at 'rectangle' using lockbitmap method
+
+//PixelReader BaseClass & PixelReader8, PixelReader16, PixelReader32
+: Provides ToGdiPlusOrder Method
+ - To Put colour values into proper order for GDI+ (i.e., BGRA, where Alpha is always 0xFF). This is 32bpp [Reads framebuffer byte/2-byte/4-byte and convert it to RGBA (int)] for processing 
+		byte red   = (byte) ((pixel >> framebuffer.RedShift)   & framebuffer.RedMax);
+		return (int) (blue & 0xFF | green << 8 | red << 16 | 0xFF << 24);		
+: PixelReader8 [8bpp]: public override int ReadPixel()
+		{
+			byte idx = reader.ReadByte();
+			return ToGdiPlusOrder((byte)rfb.MapEntries[idx, 0], (byte)rfb.MapEntries[idx, 1], (byte)rfb.MapEntries[idx, 2]);
+		}
+		//see above take byte then lookup pellete for RGBA conversion
+: PixelReader16 [16bpp]
+		public override int ReadPixel()
+		{
+			//2bytes are read
+			byte[] b = reader.ReadBytes(2);
+			//convert to single byte (ushort) index
+            ushort pixel = (ushort)(((uint)b[0]) & 0xFF | ((uint)b[1]) << 8);
+			//shift are 545, 234 in that 16bit gets R,G,B out and uses 0-255 scale
+			byte red = (byte)(((pixel >> framebuffer.RedShift) & framebuffer.RedMax) * 255 / framebuffer.RedMax);
+			byte green = (byte)(((pixel >> framebuffer.GreenShift) & framebuffer.GreenMax) * 255 / framebuffer.GreenMax);
+			byte blue = (byte)(((pixel >> framebuffer.BlueShift) & framebuffer.BlueMax) * 255 / framebuffer.BlueMax);
+			//Convert to RGBA+
+			return ToGdiPlusOrder(red, green, blue);			
+		}
+		//see above - it first get RGB Scale out of 16Bits and then maps to color using 0-255 (no pellet)
+: PixelReader32 [32bpp]
+		public override int ReadPixel()
+		{
+			// Read the pixel value (4 bytes)
+			byte[] b = reader.ReadBytes(4);
+			// Extract RGB out of it
+            uint pixel = (uint)(((uint)b[0]) & 0xFF | 
+                                ((uint)b[1]) << 8   | 
+                                ((uint)b[2]) << 16  | 
+                                ((uint)b[3]) << 24);
+
+			// Extract RGB intensities from pixel
+			byte red   = (byte) ((pixel >> framebuffer.RedShift)   & framebuffer.RedMax);
+			byte green = (byte) ((pixel >> framebuffer.GreenShift) & framebuffer.GreenMax);
+			byte blue  = (byte) ((pixel >> framebuffer.BlueShift)  & framebuffer.BlueMax);
+			//Convert RGB to RGBA
+			return ToGdiPlusOrder(red, green, blue);			
+		}
+//ZrleRectangle: Implementation of ZRLE encoding, as well as drawing support. RreRectangle: RRE encoding. HextileRectangle: Hextile encoding. CoRreRectangle: CoRRE encoding
+		
+//RawRectangle Class [No Encoding - 32bpp, Decode() Method]
+//1. Converts received framebuffer using pixelreader into RGBA integer pixel in to framebuffer only
+//2. Draw(Bitmap desktop) takes RGBA and paste on screen bitmap
+		public override void Decode()
+		{
+			// Each pixel from the remote server represents a pixel to be drawn
+			for (int i = 0; i < rectangle.Width * rectangle.Height; ++i) {
+				framebuffer[i] = preader.ReadPixel();
+			}
+		}
+		//see just use preader to convert framebuffer integer's into RGBA integers
+
+^ 

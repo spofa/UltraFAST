@@ -26,7 +26,9 @@ namespace VncSharp
 	public interface IDesktopUpdater
 	{
 		/// <summary>
-		/// Given a desktop Bitmap that is a local representation of the remote desktop, updates sent by the server are drawn into the area specifed by UpdateRectangle.
+		/// Given a desktop Bitmap that is a local representation of the remote desktop, updates sent by the server are drawn 
+		/// into the area specifed by UpdateRectangle.
+		/// (In main bitmap it paints inside UpdateRectangle)
 		/// </summary>
 		/// <param name="desktop">The desktop Bitmap on which updates should be drawn.</param>
 		void Draw(Bitmap desktop);
