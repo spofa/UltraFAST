@@ -113,6 +113,7 @@ AutoTest.Net/
 [Ee]xpress/
 
 # NuGet Packages Directory
+packages/
 packages/*
 ## TODO: If the tool you use requires repositories.config
 ## uncomment the next line
