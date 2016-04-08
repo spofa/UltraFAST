@@ -3,6 +3,16 @@
 
 # Custom files present locally
 
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
 # User-specific files
 *.suo
 *.user
