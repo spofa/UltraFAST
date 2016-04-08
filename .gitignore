@@ -12,6 +12,8 @@
 *.FileListAbsolute.txt
 *.GenerateResource.Cache
 
+#SVN Folder
+.svn/
 
 # Build results
 [Bb]in/
