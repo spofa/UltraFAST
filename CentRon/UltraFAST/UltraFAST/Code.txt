@@ -1,0 +1,11 @@
+﻿	//Convert to GrayScale (8-bit Same Size)
+	AFFilters.Grayscale filtGrayScale = new AFFilters.Grayscale(0.2125, 0.7154, 0.0721);
+	Bitmap bmpGrayedTiles = filtGrayScale.Apply(roiArea.CroppedBitmap);
+	
+	//ReSizing Image
+	IMGResizing RESizr = new IMGResizing();
+    RESizr.ReduceToSizeX = (int)(PerCentRESz * inWidth);
+    RESizr.ReduceToSizeY = (int)(PerCentRESz * inHeight);
+    RESizr.SaveFileName = "imgShrunkROI" + roiArea.RgnIndex.ToString();			    	
+    ((AHandler)RESizr).TExecute(ref objGrayedTiles);
+    bmpGrayedScaledTiles = RESizr.bmpReduced;

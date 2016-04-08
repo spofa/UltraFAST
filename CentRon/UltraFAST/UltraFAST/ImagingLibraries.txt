@@ -1,0 +1,12 @@
+
+Image Processing Libraries
+-----------------------------
+
+AForge.NET (http://www.aforgenet.com/)
+ImageProcessor (http://imageprocessor.org)
+EmguCV (http://www.emgu.com/wiki/index.php/Main_Page) [[NET Wrapper To OpenCV]]
+DotImaging (https://github.com/dajuric/dot-imaging)
+CUDAFy (http://www.codeproject.com/Articles/572583/CUDA-Programming-Model-on-AMD-GPUs-and-Intel-CPUs)
+BitBlt (http://www.codeproject.com/Articles/6710/Using-BitBlt-to-Copy-and-Paste-Graphics)
+Accord.NET (http://accord-framework.net/)
+
