@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SimplePaletteQuantizer.Quantizers;
+using System.Diagnostics;
 
 namespace SimplePaletteQuantizer
 {
@@ -37,7 +38,12 @@ namespace SimplePaletteQuantizer
         {
             quantizer.Clear();
             pictureSource.Image = sourceImage;
+            
+            Stopwatch S = new Stopwatch();
+            S.Start();
             pictureTarget.Image = GetQuantizedImage(sourceImage);
+            S.Stop();
+            MessageBox.Show(String.Format("Elapsed: {0} mSec", S.Elapsed.Milliseconds));
         }
 
         private Image GetQuantizedImage(Image image)
