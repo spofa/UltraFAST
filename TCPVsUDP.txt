@@ -1,0 +1,34 @@
+STUN (UDP/TCP Hole Punching)
+TURN (When STUN Fails, Relay By Server)
+ICE (Find Best Path - STUN/TURN/...)
+STUNT (
+
+UDP vs TCP (Why UDP is Went Slower than TCP)
+--------------------------------------------
+
+^ UDP is faster than TCP (theoretically and by design), because it's non-existent acknowledge packet (ACK) that permits a continuous packet stream in UDP. Instead of TCP that acknowledges a set of packets, calculated by using the TCP window size and round-trip time (RTT). TCP is reliable and UDP is un-reliable.
+^ IP frame for UDP can carry more data than TCP (TCP header is bigger than UDP). IP header is 20 bytes and UDP is 8 bytes. Thus 28bytes in UDP wire frame.
+^ If a data is broken into more frames, communication slows down. TCP can chunk data but UDP does not do this. Thus UDP can be at time 5-7 times slower than TCP due to excessive chunking.
+^ While UDP datagram can be upto 64K, the actual wire frames are 1500bytes (normally ethernet MTU). With 28byte header, each frame can carry 1472 byte payload. TCP has built in datagram packetization and re-assembly that is fast. In UDP is you look for relaibility you've to do re-assembly and packetization which makes it slow (This is like Lidgren)
+^ Each frame goes through several buffers as you send it: The application buffer, The Protocol Buffer, The Software interface buffer and the Hardware interface buffer. As you start stressing the stack by sending high speed data you will fill up these buffers and either block or lose data. You also have strategies for timeliness and polling that can impact your performance. For example, by using a larger buffer and poll less often you can get much better performance while sacrificing latency. So UDP may go slower than TCP.
+^ "TCP is optimized for high speed bulk transfers while UDP is optimized for low latency in the Linux kernel". This has an impact on buffer sizes and how data is polled and handed over. In addition to this, you frequently have offloading to hardware for TCP so its faster. I would expect considerably better performance for TCP compared to UDP.
+^ Note that sending high speed data over UDP is usually a bad idea, unless you implement your own congestion control. TCP protects your network from congestion collapses. Use UDP when you have small amounts of data or high timeliness requirements.
+^ If message is 64byte and MTU is 1500 then anything UDP/TCP will become slow and ineffecient. TCP merge multiple packets into single packet so it'll be faster for small datagrams than MTU but UDP will always be slower.
+ - UDP is unrelaible (80% packet loss)
+ - UDP is slow/in-effecient if Frame < MTU Size
+ - TCP is hardware optimized for MTU & for best use of Link
+ - UDP is used with real-time data where older data does not matters. Your sender can pack smaller packets into MTU or split larger into MTU and reciever can reverse like in lidgren. But this will slow UDP, more if ACKs are made. If tile size is made same as MTU size it'll be faster than TCP. 
+ - Satellite links TCP is not optimal utilizing, thus UDP with reliability layer of TCP optimized for high-latency link is used.
+ - UDP is used where data can be thrown without any effect.
+ - UDP can work without connections and can broadcase at high speed.
+[[UDP Unrelaible with Frame/Tile=MTU shall be Fastest]]
+
++ ZIP
++ UnRelaible [[Your Way]] => Introduce()
++ Tile to MTU size
+--------------
++ UDP // TCP (Faster)
+
+: Try Introduce() Lidgren
+: TCP Punching Library
+: STUNT Library Trial
