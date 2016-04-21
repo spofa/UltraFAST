@@ -22,11 +22,11 @@
             </MenuItem>
             <Separator />
             <Label Content="Server:" Margin="0,-5,0,0" />
-            <TextBox Name="txtServer" Width="150" Text="192.168.8.24"/>
+            <TextBox Name="txtServer" Width="150" Text="127.0.0.1"/>
             <Label Content="Port:" Margin="0,-5,0,0" />
-            <TextBox Name="txtPort" Width="50" Text="5900" />
+            <TextBox Name="txtPort" Width="50" Text="5901" />
             <Label Content="Password:" Margin="0,-5,0,0"  />
-            <TextBox Name="txtPassword" Width="150" Text="abc123" />
+            <TextBox Name="txtPassword" Width="150" Text="password" />
         </Menu>
     </Grid>
 </Window>
