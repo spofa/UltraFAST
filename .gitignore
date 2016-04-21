@@ -30,8 +30,8 @@ $RECYCLE.BIN/
 [Oo]bj/
 [Dd]ebug/
 [Rr]elease/
-x64/
-x86/
+# x64/
+# x86/
 TempPE/
 # No dll/exe/pdb (debug/release/bin/obj already excluded)
 #*.dll
