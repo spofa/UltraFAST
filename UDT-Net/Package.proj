@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This script requires the MSBuild Community Tasks (http://msbuildtasks.tigris.org).
+
+To build a new version package, run the default target.
+
+	msbuild Package.proj
+
+You will be prompted to enter the version number on the command line in
+W.X.Y.Z format. The version number will be inserted into the assembly metadata,
+the project will be built (Win32 and x64 in Release), and the result is stored
+in a zip file named UdtProtocol-[Version].zip.
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+		 DefaultTargets="Package"
+		 ToolsVersion="4.0">
+		
+	<PropertyGroup>
+		<Version></Version>
+		<NUnitHome>C:\Program Files (x86)\NUnit 2.5.10</NUnitHome>
+	</PropertyGroup>
+		
+	<Target Name="Package"
+			DependsOnTargets="SetVersion;Build">
+			
+		<ItemGroup>
+			<ZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release\**\*.dll" />
+			<ZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release\**\*.pdb" />
+			<ZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release\**\*.xml" />
+		</ItemGroup>
+			
+		<Delete Files="$(MSBuildProjectDirectory)\UdtProtocol-$(Version).zip" />
+			
+ 		<Zip Files="@(ZipFiles)"
+			 WorkingDirectory="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release"
+			 ZipFileName="$(MSBuildProjectDirectory)\UdtProtocol-$(Version).zip"
+			 ZipLevel="9" />
+			 
+		<ItemGroup>
+			<SignedZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release - Signed\**\*.dll" />
+			<SignedZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release - Signed\**\*.pdb" />
+			<SignedZipFiles Include="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release - Signed\**\*.xml" />
+		</ItemGroup>
+		
+		<Zip Files="@(SignedZipFiles)"
+			 WorkingDirectory="$(MSBuildProjectDirectory)\UdtProtocol\bin\Release - Signed"
+			 ZipFileName="$(MSBuildProjectDirectory)\UdtProtocol-Signed-$(Version).zip"
+			 ZipLevel="9" />
+			 
+	</Target>
+	
+	<Target Name="SetVersion">
+	
+		<Prompt Text="Enter the version (example W.X.Y.Z):" Condition="'$(Version)' == ''" >
+			<Output TaskParameter="UserInput" PropertyName="Version" />
+		</Prompt>
+
+		<!-- Insert the version into the project resource file. -->
+		<!-- This is the version that is shown in the Explorer properties dialog. -->
+		<FileUpdate Files="$(MSBuildProjectDirectory)\UdtProtocol\UdtProtocol.rc"
+					Regex="(FILEVERSION|PRODUCTVERSION)\s+\d+,\d+,\d+,\d+"
+					ReplacementText="$1 $(Version.Replace('.', ','))"
+					Encoding="iso-8859-1" />
+					
+		<FileUpdate Files="$(MSBuildProjectDirectory)\UdtProtocol\UdtProtocol.rc"
+					Regex="VALUE\s+&quot;(FileVersion|ProductVersion)&quot;\s*,\s*&quot;\d+\.\d+\.\d+\.\d+&quot;"
+					ReplacementText="VALUE &quot;$1&quot;, &quot;$(Version)&quot;"
+					Encoding="iso-8859-1" />
+		
+		<!-- Insert the version into the assembly attributes. -->
+		<FileUpdate Files="$(MSBuildProjectDirectory)\UdtProtocol\AssemblyInfo.cpp"
+					Regex="\[assembly:AssemblyVersionAttribute\(&quot;\d+\.\d+\.\d+\.\d+&quot;\)\];"
+					ReplacementText="[assembly:AssemblyVersionAttribute(&quot;$(Version)&quot;)];"
+					Encoding="iso-8859-1" />
+					
+	</Target>
+	
+	<Target Name="Build">
+	
+		<MSBuild Projects="$(MSBuildProjectDirectory)\UdtProtocol.sln"
+				 Targets="Clean;Build"
+				 Properties="Configuration=Release; Platform=Win32"
+				 ToolsVersion="4.0" />
+	
+		<!--
+		<Exec Command="&quot;$(NUnitHome)\bin\net-2.0\nunit-console-x86.exe&quot; &quot;$(MSBuildProjectDirectory)\UdtProtocol-Test\bin\x86\Release\UdtProtocol-Test.dll&quot;"/>
+		-->
+		
+		<MSBuild Projects="$(MSBuildProjectDirectory)\UdtProtocol.sln"
+				 Targets="Clean;Build"
+				 Properties="Configuration=Release; Platform=x64"
+				 ToolsVersion="4.0" />
+		<!--
+		<Exec Command="&quot;$(NUnitHome)\bin\net-2.0\nunit-console.exe&quot; &quot;$(MSBuildProjectDirectory)\UdtProtocol-Test\bin\x64\Release\UdtProtocol-Test.dll&quot;"/>
+		-->
+		
+		<MSBuild Projects="$(MSBuildProjectDirectory)\UdtProtocol.sln"
+				 Targets="Clean;Build"
+				 Properties="Configuration=Release - Signed; Platform=Win32"
+				 ToolsVersion="4.0" />
+				 
+		<MSBuild Projects="$(MSBuildProjectDirectory)\UdtProtocol.sln"
+				 Targets="Clean;Build"
+				 Properties="Configuration=Release - Signed; Platform=x64"
+				 ToolsVersion="4.0" />
+				 
+	</Target>
+	
+	<Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+   
+</Project>
