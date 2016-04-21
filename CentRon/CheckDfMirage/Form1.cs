@@ -85,6 +85,96 @@ namespace CheckDfMirage
             netPeer.Recycle(incomingMessage);
         }
 
+        static void AppLoop(object sender, EventArgs e)
+        {
+            NetIncomingMessage inc;
+
+            while (NativeMethods.AppStillIdle)
+            {
+                // read any pending messages
+                while ((inc = Server.WaitMessage(100)) != null)
+                {
+                    switch (inc.MessageType)
+                    {
+                        case NetIncomingMessageType.DebugMessage:
+                        case NetIncomingMessageType.VerboseDebugMessage:
+                        case NetIncomingMessageType.WarningMessage:
+                        case NetIncomingMessageType.ErrorMessage:
+                            // just print any message
+
+                            break;
+                        case NetIncomingMessageType.DiscoveryRequest:
+                            NetOutgoingMessage dom = Server.CreateMessage();
+                            dom.Write("Kokosboll");
+                            Server.SendDiscoveryResponse(dom, inc.SenderEndPoint);
+                            break;
+                        case NetIncomingMessageType.ConnectionApproval:
+
+                            // Here we could check inc.SenderConnection.RemoteEndPoint, deny certain ip
+
+                            // check hail data
+                            try
+                            {
+                                int a = inc.ReadInt32();
+                                string s = inc.ReadString();
+
+                                if (a == 42 && s == "secret")
+                                    inc.SenderConnection.Approve();
+                                else
+                                    inc.SenderConnection.Deny("Bad approve data, go away!");
+                            }
+                            catch (NetException)
+                            {
+                                inc.SenderConnection.Deny("Bad approve data, go away!");
+                            }
+                            break;
+                        case NetIncomingMessageType.StatusChanged:
+                            NetConnectionStatus status = (NetConnectionStatus)inc.ReadByte();
+
+                            if (status == NetConnectionStatus.Connected)
+                            {
+
+                                NetOutgoingMessage om = Server.CreateMessage(ImageData.Length + 5);
+
+                                om.Write((ushort)ImageWidth);
+                                om.Write((ushort)ImageHeight);
+                                om.Write((int)ImageData.Length);
+                                om.Write(ImageData);
+
+                                Image x = (Bitmap)((new ImageConverter()).ConvertFrom(ImageData));
+
+
+                                string filename = "D:\\Temp\\Juggler" + ImageData.Length + ".jpg";
+
+                                if (File.Exists(filename))
+                                {
+
+                                    File.Delete(filename);
+                                }
+
+                                x.Save(filename, ImageFormat.Jpeg);
+
+
+                                Server.SendMessage(om, inc.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
+
+                                // all messages will be sent before disconnect so we can call it here
+                                // inc.SenderConnection.Disconnect("Bye bye now");
+                            }
+
+                            if (status == NetConnectionStatus.Disconnected)
+                            {
+
+                            }
+
+                            break;
+                    }
+
+                    // recycle message to avoid garbage
+                    Server.Recycle(inc);
+                }
+            }
+        }
+
         public void Start(Bitmap file)
         {
             if (Server.Status != NetPeerStatus.NotRunning)

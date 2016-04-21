@@ -9,10 +9,12 @@ namespace RemoteClient
 {
     public interface IService
     {
-        void OnData(Data data);
+        void OnData(TransferData data);
         void start();
 
         void stop();
+        void SendImage();
 
+        void SendSettings();
     }
 }

@@ -19,7 +19,9 @@ namespace TravelObjects
         ConnectPartnerCallback,
         ConnectPartner,
         Ping,
-        Read,
+        FullRead,
+        ReadPartial,
+        ReadTile,
         ReadResponse,
         Disconnect,
 
@@ -30,7 +32,12 @@ namespace TravelObjects
         LDown,
         RDown,
         LUp,
-        RUp
+        RUp,
+
+
+
+        Settings,
+        SettingsReceived,
 
 
 

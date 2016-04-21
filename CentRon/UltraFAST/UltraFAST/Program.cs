@@ -34,22 +34,28 @@ namespace UltraFAST
 		//http://bobcravens.com/2009/04/create-a-remote-desktop-viewer-using-c-and-wcf/
 		public static void Main(string[] args)
 		{
-			//Console.WriteLine("Hello World!");
+			//Logger.WriteLine("Hello World!");
 
 
-            UDPP2PServer s = new UDPP2PServer();
-            UDPP2PClient c1 = new UDPP2PClient("SACHIN", "200.168.1.7");
-            Thread.Sleep(5000);
+   //         UDPP2PServer s = new UDPP2PServer();
+   //         UDPP2PClient c1 = new UDPP2PClient("SACHIN", "200.168.1.7");
+   //         Thread.Sleep(5000);
             
-            Console.WriteLine(c1.ReadFromServer());
-            UDPP2PClient c2 = new UDPP2PClient("SUMIT", "200.168.1.7");
-            Thread.Sleep(5000);
+   //         Logger.WriteLine(c1.ReadFromServer());
+   //         UDPP2PClient c2 = new UDPP2PClient("SUMIT", "200.168.1.7");
+   //         Thread.Sleep(5000);
             
-			Console.WriteLine(c2.ReadFromServer());
+			//Logger.WriteLine(c2.ReadFromServer());
 
-            MainApplication Appliation = new MainApplication();		
-			
-			Console.WriteLine("Press any key to continue . . .");
+            MainApplication Appliation = new MainApplication();
+            Appliation.ReduceAllTiles = true;
+            Appliation.def_maxAllowedScrSz4TransmitX = 1366;
+            Appliation.def_maxAllowedScrSz4TransmitY = 768;
+            Appliation.nColoumsDefault = 2;
+            Appliation.nRowsDefault = 2;
+            Appliation.ReInitializeAndReadSettings();
+
+            Logger.WriteLine("Press any key to continue . . .");
 			Console.ReadKey(true);
 			
 			double elapsed = 0.0;
@@ -67,9 +73,9 @@ namespace UltraFAST
 			
 			double FPS = numAttempts / elapsed;
 			
-			Console.WriteLine(string.Format("\r\n\r\nFPS: {0:0.00}", FPS));
+			Logger.WriteLine(string.Format("\r\n\r\nFPS: {0:0.00}", FPS));
 			
-			Console.WriteLine("Press any key to exit . . . ");
+			Logger.WriteLine("Press any key to exit . . . ");
 			Console.ReadKey(true);
 		}
 	}

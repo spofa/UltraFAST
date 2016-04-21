@@ -22,29 +22,5 @@ namespace UltraFAST.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public double nTileTXSzX {
-            get {
-                return ((double)(this["nTileTXSzX"]));
-            }
-            set {
-                this["nTileTXSzX"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public double nTileTXSzY {
-            get {
-                return ((double)(this["nTileTXSzY"]));
-            }
-            set {
-                this["nTileTXSzY"] = value;
-            }
-        }
     }
 }

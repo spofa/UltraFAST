@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ConSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Rows>4</Rows>
+  <Columns>4</Columns>
+  <TileDeliveryMethod>ReliableOrdered</TileDeliveryMethod>
+  <ResetDefault>false</ResetDefault>
+  <ServerIP>192.168.11.124</ServerIP>
+  <AutoConnectServer>true</AutoConnectServer>
+  <Is8BitQuantize>false</Is8BitQuantize>
+  <ScaleDownSize>
+    <Width>1366</Width>
+    <Height>768</Height>
+  </ScaleDownSize>
+  <SendingMethod>Pull</SendingMethod>
+  <UpdateFrequency>250</UpdateFrequency>
+  <UpScale>true</UpScale>
+  <ConvertToJPEG>true</ConvertToJPEG>
+  <JPEGQuality>1</JPEGQuality>
+  <CompressTiles>true</CompressTiles>
+</ConSettings>

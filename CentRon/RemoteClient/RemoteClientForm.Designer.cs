@@ -44,10 +44,9 @@
             this.btnSendPartner = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.txtRelayBox = new System.Windows.Forms.TextBox();
-            this.btnSendTCP = new System.Windows.Forms.Button();
             this.btnConnectServerTCP = new System.Windows.Forms.Button();
-            this.btnConnectPartnerTCP = new System.Windows.Forms.Button();
             this.ketch = new System.Windows.Forms.Button();
+            this.btnSendImage = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -65,7 +64,7 @@
             this.txtServerIP.Name = "txtServerIP";
             this.txtServerIP.Size = new System.Drawing.Size(100, 20);
             this.txtServerIP.TabIndex = 1;
-            this.txtServerIP.Text = "192.168.12.162";
+            this.txtServerIP.Text = "192.168.11.124";
             // 
             // txtServerPort
             // 
@@ -189,16 +188,6 @@
             this.txtRelayBox.Size = new System.Drawing.Size(612, 240);
             this.txtRelayBox.TabIndex = 15;
             // 
-            // btnSendTCP
-            // 
-            this.btnSendTCP.Location = new System.Drawing.Point(556, 137);
-            this.btnSendTCP.Name = "btnSendTCP";
-            this.btnSendTCP.Size = new System.Drawing.Size(86, 23);
-            this.btnSendTCP.TabIndex = 16;
-            this.btnSendTCP.Text = "TCP Send";
-            this.btnSendTCP.UseVisualStyleBackColor = true;
-            this.btnSendTCP.Visible = false;
-            // 
             // btnConnectServerTCP
             // 
             this.btnConnectServerTCP.Location = new System.Drawing.Point(474, 10);
@@ -209,25 +198,25 @@
             this.btnConnectServerTCP.UseVisualStyleBackColor = true;
             this.btnConnectServerTCP.Visible = false;
             // 
-            // btnConnectPartnerTCP
-            // 
-            this.btnConnectPartnerTCP.Location = new System.Drawing.Point(556, 87);
-            this.btnConnectPartnerTCP.Name = "btnConnectPartnerTCP";
-            this.btnConnectPartnerTCP.Size = new System.Drawing.Size(86, 23);
-            this.btnConnectPartnerTCP.TabIndex = 18;
-            this.btnConnectPartnerTCP.Text = "Connect TCP";
-            this.btnConnectPartnerTCP.UseVisualStyleBackColor = true;
-            this.btnConnectPartnerTCP.Visible = false;
-            // 
             // ketch
             // 
             this.ketch.Location = new System.Drawing.Point(371, 44);
             this.ketch.Name = "ketch";
             this.ketch.Size = new System.Drawing.Size(75, 23);
             this.ketch.TabIndex = 19;
-            this.ketch.Text = "Ketch";
+            this.ketch.Text = "Save Settings";
             this.ketch.UseVisualStyleBackColor = true;
             this.ketch.Click += new System.EventHandler(this.ketch_Click);
+            // 
+            // btnSendImage
+            // 
+            this.btnSendImage.Location = new System.Drawing.Point(557, 87);
+            this.btnSendImage.Name = "btnSendImage";
+            this.btnSendImage.Size = new System.Drawing.Size(75, 23);
+            this.btnSendImage.TabIndex = 20;
+            this.btnSendImage.Text = "Send Image";
+            this.btnSendImage.UseVisualStyleBackColor = true;
+            this.btnSendImage.Click += new System.EventHandler(this.btnSendImage_Click);
             // 
             // RemoteClientForm
             // 
@@ -235,10 +224,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ClientSize = new System.Drawing.Size(645, 438);
+            this.Controls.Add(this.btnSendImage);
             this.Controls.Add(this.ketch);
-            this.Controls.Add(this.btnConnectPartnerTCP);
             this.Controls.Add(this.btnConnectServerTCP);
-            this.Controls.Add(this.btnSendTCP);
             this.Controls.Add(this.txtRelayBox);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnSendPartner);
@@ -283,10 +271,9 @@
         private System.Windows.Forms.Button btnSendPartner;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtRelayBox;
-        private System.Windows.Forms.Button btnSendTCP;
         private System.Windows.Forms.Button btnConnectServerTCP;
-        private System.Windows.Forms.Button btnConnectPartnerTCP;
         private System.Windows.Forms.Button ketch;
+        private System.Windows.Forms.Button btnSendImage;
     }
 }
 

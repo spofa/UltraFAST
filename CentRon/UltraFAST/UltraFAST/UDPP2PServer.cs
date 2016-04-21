@@ -130,7 +130,7 @@ namespace UltraFAST
 						//Process each command
 						foreach(String sCmd in rxEDTelegrams)
 						{
-						   Console.WriteLine(String.Format("SERVERGOT# [{0}]", sCmd));
+						   Logger.WriteLine(String.Format("SERVERGOT# [{0}]", sCmd));
 
                             if(sCmd.StartsWith(UDPRequests.CONNECT))
                             {
@@ -141,7 +141,7 @@ namespace UltraFAST
                                 var routerPort = groupEP.Port;
                                 var clntID = UDPConstants.getTokenValue(sCmd, "FROM");
 
-                                Console.WriteLine(String.Format("CONNECTED: {2} <ON ROUTER: {0}:{1}>", routerIP, routerPort, clntID));
+                                Logger.WriteLine(String.Format("CONNECTED: {2} <ON ROUTER: {0}:{1}>", routerIP, routerPort, clntID));
                                 
                                 //Send OK Message With Extra Data
                                 byte[] ackMsg = UDPP2PMessages.getConnectReply("SERVER", UDPStatus.ACK, clntID, routerIP.ToString(), routerPort.ToString());

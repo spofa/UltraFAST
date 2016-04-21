@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using TravelObjects;
 namespace RemoteClient
 {
-    public class UdpEventArgs : EventArgs { public Data Request = null; }
+    public class UdpEventArgs : EventArgs { public TransferData Request = null; }
 
 
     public static class ListenService
@@ -32,8 +32,6 @@ namespace RemoteClient
         public static string IsHost { get; set; }
 
         public static bool ServiceStarted { get; set; }
-
-
    
         public static UdpClient udpClient;
 
@@ -47,6 +45,20 @@ namespace RemoteClient
         private static List<NetIncomingMessage> m_readList;
 
 
+
+        public static void CloseAllConnections()
+        {
+
+            if (LClient != null)
+            {
+                if (LClient.ConnectionsCount > 0)
+                {
+                    LClient.Shutdown("Bye");
+                }
+
+            }
+
+        }
 
         public static NetPeerConfiguration GetStandardConfiguration()
         {
@@ -62,7 +74,7 @@ namespace RemoteClient
             config.DisableMessageType(NetIncomingMessageType.ErrorMessage);
             config.DisableMessageType(NetIncomingMessageType.NatIntroductionSuccess);
             config.DisableMessageType(NetIncomingMessageType.Receipt);
-            config.DisableMessageType(NetIncomingMessageType.UnconnectedData);
+            config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
             config.DisableMessageType(NetIncomingMessageType.VerboseDebugMessage);
             config.DisableMessageType(NetIncomingMessageType.WarningMessage);
             // Enable only what we need
@@ -73,7 +85,12 @@ namespace RemoteClient
             //config.EnableMessageType(NetIncomingMessageType.VerboseDebugMessage);
             config.EnableMessageType(NetIncomingMessageType.WarningMessage);
             config.EnableMessageType(NetIncomingMessageType.ErrorMessage);
+
+
+
             config.AcceptIncomingConnections = true;
+
+
             // No need to assign a port, as the OS will automatically assign an available port
             return config;
         }
@@ -111,8 +128,6 @@ namespace RemoteClient
                 case NetIncomingMessageType.ConnectionApproval:
                     msg.SenderConnection.Approve();
                     break;
-
-
                 case NetIncomingMessageType.StatusChanged:
 
                     break;
@@ -148,7 +163,7 @@ namespace RemoteClient
         /// <param name="PartnerData"></param>
         /// <param name="host"></param>
         /// <param name="method">Default: NetDeliveryMethod.ReliableOrdered</param>
-        public static void ConnectServer(Data PartnerData, IPEndPoint host, NetDeliveryMethod method = NetDeliveryMethod.ReliableOrdered)
+        public static void ConnectServer(TransferData PartnerData, IPEndPoint host, NetDeliveryMethod method = NetDeliveryMethod.ReliableOrdered)
         {
 
 
@@ -189,7 +204,7 @@ namespace RemoteClient
         }
 
 
-        public static void ConnectPartner(Data PartnerData)
+        public static void ConnectPartner(TransferData PartnerData)
         {
 
             bool isLocal = false;
@@ -243,7 +258,7 @@ namespace RemoteClient
         /// <param name="host"></param>
         /// <param name="method">Default: NetDeliveryMethod.ReliableOrdered (But Tiles Can Change)</param>
         /// <returns></returns>
-        public static bool SendLidgrenMessage(Data PartnerData, IPEndPoint host, NetDeliveryMethod method = NetDeliveryMethod.ReliableOrdered)
+        public static bool SendLidgrenMessage(TransferData PartnerData, IPEndPoint host, NetDeliveryMethod method = NetDeliveryMethod.ReliableOrdered)
         {
             bool retval = false;
 
@@ -255,30 +270,32 @@ namespace RemoteClient
 
             if (connection == null)
             {
-                LClient.Connect(host);
+                LClient.Connect(host); 
                 Thread.Sleep(500);
+                connection = LClient.Connections.Where(t => t.RemoteEndPoint.Address.ToString() == host.Address.ToString()).FirstOrDefault();
             }
 
             if (connection == null)
             {
                 LClient.Connect(host);
                 Thread.Sleep(500);
+                connection = LClient.Connections.Where(t => t.RemoteEndPoint.Address.ToString() == host.Address.ToString()).FirstOrDefault();
             }
 
             if (connection == null)
             {
                 LClient.Connect(host);
                 Thread.Sleep(500);
+                connection = LClient.Connections.Where(t => t.RemoteEndPoint.Address.ToString() == host.Address.ToString()).FirstOrDefault();
             }
 
-            connection = LClient.Connections.Where(t => t.RemoteEndPoint.Address.ToString() == host.Address.ToString()).FirstOrDefault();
-
+         
             if (connection != null)
             {
-                LClient.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered);
+                LClient.SendMessage(msg, connection, method);
                 retval = true;
             }
-
+            
             return retval;
 
             // IPEndPoint receiver = new IPEndPoint(NetUtility.Resolve(host.Address.ToString()), host.Port);
@@ -294,7 +311,7 @@ namespace RemoteClient
             {
 
                 if (message == null) return;
-                Data data = new Data(message.ReadBytes(message.LengthBytes));
+                TransferData data = new TransferData(message.ReadBytes(message.LengthBytes));
 
                 switch (data.cmdCommand)
                 {
@@ -325,15 +342,23 @@ namespace RemoteClient
 
         }
 
+
+        /// <summary>
+        /// Lydgrn callback
+        /// </summary>
+        /// <param name="ar"></param>
         private static void OnData(IAsyncResult ar)
         {
             string datareceived = string.Empty;
 
             try
             {
+                //DeSerialize To Data Object from Lyndgryn
                 IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 80);
                 byte[] received = ListenService.udpClient.EndReceive(ar, ref RemoteIpEndPoint);
-                Data data = new Data(received);
+                TransferData data = new TransferData(received);
+
+                //Process Self Commands
                 switch (data.cmdCommand)
                 {
                     case Command.Login:
@@ -344,11 +369,11 @@ namespace RemoteClient
                         Globals.AppForm.OnData(data);
                         break;
                     default:
+                        //Peer-To-Peer (Data Recieved)
                         if (Globals.service != null)
                         {
                             Globals.service.OnData(data);
                         }
-
                         break;
                 }
 
@@ -361,22 +386,25 @@ namespace RemoteClient
             }
 
         }
-        public static void  StartService()
+
+        public static void  InitializeService()
         {
             ServiceStarted = true;
 
             if (IsHost=="yes")
             {
                 Globals.service = new HostService();
-                Globals.service.start();
+            //    Globals.service.start();
                 Globals.AppForm.PrintMessage("Acting as Host!");
             }
             else
             {
                 Globals.service = new ClientService();
-                Globals.service.start();
-                Globals.AppForm.PrintMessage("Acting as Client!");
 
+             //   Globals.service.SendSettings();
+
+              //  Globals.service.start();
+                Globals.AppForm.PrintMessage("Acting as Client!");
             }
 
         }
@@ -388,14 +416,13 @@ namespace RemoteClient
             bool isLocal = false;
             if (ListenService.Partner.LocalEndPoint != null)
             {
-                isLocal = IsLanIP(ListenService.Partner.LocalEndPoint.Address);
+              //  isLocal = IsLanIP(ListenService.Partner.LocalEndPoint.Address);
             }
 
             try
-            {
-
-
+            { 
                 if (isLocal)
+
                 {
                     ep = ListenService.Partner.LocalEndPoint;
                 }
@@ -412,7 +439,7 @@ namespace RemoteClient
             return ep;
         }
 
-        public static void SendUDPMessage_OBSO(Data PartnerData)
+        public static void SendUDPMessage_OBSO(TransferData PartnerData)
         {
 
             bool isLocal = false;

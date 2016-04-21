@@ -29,25 +29,79 @@ namespace RemoteClient
 
         uint SRCCOPY = 13369376;
 
-
+        Bitmap bitmap;
 
 
         System.Drawing.Graphics formGraphics;
         bool locked = false;
 
+        /// <summary>
+        /// Process Recieved Tile (Called On UI Thread Asynch
+        /// </summary>
+        /// <param name="iTile"></param>
+        public void ProcessImage(TransferData iTile)
+        {
+            //Return if no tile to process
+            if (iTile == null || iTile.UDPTravelData == null || iTile.UDPTravelData.ByteArray == null)
+            {
+                return;
+            }
+
+            //Check and decompress incoming image
+            byte[] inpImage = iTile.UDPTravelData.ByteArray;
+            if (Globals.Settings.CompressTiles)
+            {
+                inpImage = Lz4Net.Lz4.DecompressBytes(iTile.UDPTravelData.ByteArray);
+            }
+
+            //Fetch input image tile from ByteArray
+            using (MemoryStream ms_iTile = new MemoryStream(inpImage))
+            {
+                //Setup Globals.primaryImage to Bitmap
+                Bitmap bmp_iTile = (Bitmap)Image.FromStream(ms_iTile);
+
+                //Create a Surface to hold image
+                if(Globals.bmpSurface == null)
+                {
+                    Globals.bmpSurface = new Bitmap(iTile.UDPTravelData.ResizedWidth, iTile.UDPTravelData.ResizedHeight, bmp_iTile.PixelFormat);
+                }
+
+                //Write tile to Surface where all tiles are there
+                using (Graphics dstGBmp = Graphics.FromImage(Globals.bmpSurface))
+                {
+                    using (Graphics srcGBmp = Graphics.FromImage(bmp_iTile))
+                    {
+                        //Get Handles
+                        IntPtr SrcHDc = srcGBmp.GetHdc();
+                        IntPtr DstHDc = dstGBmp.GetHdc();
+
+                        //Paint to Surface
+                        int xPos = iTile.UDPTravelData.Left;
+                        int yPos = (iTile.UDPTravelData.ResizedHeight - iTile.UDPTravelData.Top - iTile.UDPTravelData.Height);
+                        StuffGDI.BitBlt(DstHDc, 0, 0, Globals.bmpSurface.Width, Globals.bmpSurface.Height, SrcHDc, xPos, yPos, TernaryRasterOperations.SRCCOPY); 
+
+                        //Release Handles
+                        srcGBmp.ReleaseHdc(SrcHDc);
+                        dstGBmp.ReleaseHdc(DstHDc);
+                    }
+                }
+            }
+        }
 
         public ScreenCapture()
         {
             InitializeComponent();
-
+            bitmap = null;
             ////SACHIN: 05-Apr-2016 (To Maximize Performance Of Graphics)
             StuffImaging.SetupFastGraphics(this);
 
             ////SACHIN: 05-Apr-2016 (To Maximize Performance Of Graphics And Reduce Flicker)
             ////(https://msdn.microsoft.com/en-in/library/system.windows.forms.controlstyles%28v=vs.110%29.aspx)
-            ////If true, the control ignores the window message WM_ERASEBKGND to reduce flicker. This style should only be applied if the UserPaint bit is set to true.
+            ////If true, the control ignores the window message WM_ERASEBKGND to reduce flicker. 
+            //This style should only be applied if the UserPaint bit is set to true.
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            ////If true, the control paints itself rather than the operating system doing so. If false, the Paint event is not raised. This style only applies to classes derived from Control.
+            //If true, the control paints itself rather than the operating system doing so. If false, the Paint event is not raised. 
+            //This style only applies to classes derived from Control.
             this.SetStyle(ControlStyles.UserPaint, true);
             ////If true flickering is reduced on screen
             this.SetStyle(ControlStyles.DoubleBuffer, true);            
@@ -62,19 +116,98 @@ namespace RemoteClient
             formGraphics = this.CreateGraphics();
 
             //A timer to load images at fast rate (10FPS) onto screen
-            this.timer1.Interval = (1000 / 10);
-            this.timer1.Enabled = false;
+            this.tmrRateMeasure.Interval = (1000 / 10);
+            this.tmrRateMeasure.Enabled = false;
         }
 
 
-        public void ImageChanged(Data data)
+        public long nTiles = 0;
+        public long nBytes = 0;
+
+        public Stopwatch stopWatch = null;
+
+        private void tmrRateMeasure_Tick(object sender, EventArgs e)
         {
-            if (data == null || data.Image == null || data.Image.ByteArray == null)
+            Debug.WriteLine(String.Format("TILES: {0}, BYTES: {1:0.000}", nTiles, (nBytes / 1024.0)));
+            nTiles = 0;
+            nBytes = 0;
+        }
+
+        public void RenderImage(TransferData iTile, 
+            bool tMeasure = false)
+        {
+            //Enable the timer
+            if (!tmrRateMeasure.Enabled)
+            {
+                tmrRateMeasure.Enabled = true;
+            }
+
+            //Don't process if no data in thread
+            if (iTile == null || iTile.UDPTravelData == null || iTile.UDPTravelData.ByteArray == null)
+            {
                 return;
-            MemoryStream ms1 = new MemoryStream(data.Image.ByteArray);
+            }
+
+
+          //  iTile.ImgDATA.ByteArray = Compressor.Decompress(iTile.ImgDATA.ByteArray);
+            //Increment nTiles & nBytes
+            nTiles++;
+            nBytes += iTile.UDPTravelData.ByteArray.Length;
+
+            //Clock Painting Time
+            if (tMeasure)
+            {
+                stopWatch = new Stopwatch();
+                stopWatch.Start();
+            }
+
+            using (MemoryStream ms1 = new MemoryStream(iTile.UDPTravelData.ByteArray))
+            {
+                //ByteArray to Bitmap
+                Globals.bmpSurface = (Bitmap)Image.FromStream(ms1);
+                //Painting Location
+                Point Pt = new Point() { X = iTile.UDPTravelData.Left, Y = (iTile.UDPTravelData.ResizedHeight - iTile.UDPTravelData.Top - iTile.UDPTravelData.Height) };
+                //Paint to Screen
+                formGraphics.DrawImage(Globals.bmpSurface, Pt);
+            }
+
+            //Print painting time
+            if (tMeasure)
+            {
+                stopWatch.Stop();
+                double elapsed = (double)stopWatch.ElapsedMilliseconds / 1000.0;
+                Debug.WriteLine(string.Format("{0:0.000}", elapsed.ToString()));
+                double fps = (1 / elapsed);
+            }
+
+            return;
+        }        
+
+        [Obsolete()]
+        public void ImageChanged(TransferData iTile)
+        {
+
+           
+
+            if (iTile == null || iTile.UDPTravelData == null || iTile.UDPTravelData.ByteArray == null)
+                return;
+            MemoryStream ms1 = new MemoryStream(iTile.UDPTravelData.ByteArray);
 
 
 
+
+
+            // NEW
+
+            if (bitmap == null)
+            {
+                //bitmap = new System.Windows.me
+
+            }
+
+
+            // END NEW
+            
             //  #region BitBlt
 
 
@@ -82,7 +215,7 @@ namespace RemoteClient
           //  Bitmap bmp = new Bitmap(ms1);
 
 
-            Globals.primaryImage = (Bitmap)Image.FromStream(ms1);
+            Globals.bmpSurface = (Bitmap)Image.FromStream(ms1);
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -105,9 +238,9 @@ namespace RemoteClient
 
 
 
-           Point Pt = new Point() { X = data.Image.x, Y = (1020 - data.Image.y - Globals.primaryImage.Height) };
+           Point Pt = new Point() { X = iTile.UDPTravelData.Left, Y = (iTile.UDPTravelData.ResizedHeight - iTile.UDPTravelData.Top - iTile.UDPTravelData.Height) };
 
-           formGraphics.DrawImage(Globals.primaryImage, Pt);
+           formGraphics.DrawImage(Globals.bmpSurface, Pt);
 
 
 
@@ -132,7 +265,7 @@ namespace RemoteClient
 
             double fps = (1 / elapsed);
 
-
+            Globals.PaintingStarted = false;
 
 
             return;
@@ -163,23 +296,23 @@ namespace RemoteClient
             //this.screenBox.Image = Globals.primaryImage;
         }
 
-        private void UpdatePrimaryImage(Data data)
+        private void UpdatePrimaryImage(TransferData data)
         {
 
 
-            if (Globals.primaryImage == null) return;
+            if (Globals.bmpSurface == null) return;
 
-            if (data == null || data.pointers == null || data.pointers.Length <= 0 || data.Image == null || data.Image.ByteArray.Length <= 0) { return; }
+            if (data == null || data.pointers == null || data.pointers.Length <= 0 || data.UDPTravelData == null || data.UDPTravelData.ByteArray.Length <= 0) { return; }
 
             if (locked == true) { return; }
 
-            var bmpData0 = Globals.primaryImage.LockBits(new Rectangle(0, 0, Globals.primaryImage.Width, Globals.primaryImage.Height), ImageLockMode.ReadOnly, Globals.primaryImage.PixelFormat);
+            var bmpData0 = Globals.bmpSurface.LockBits(new Rectangle(0, 0, Globals.bmpSurface.Width, Globals.bmpSurface.Height), ImageLockMode.ReadOnly, Globals.bmpSurface.PixelFormat);
             locked = true;
             int len = bmpData0.Height * bmpData0.Stride;
             byte[] data0 = new byte[len];
             Marshal.Copy(bmpData0.Scan0, data0, 0, len);
 
-            byte[] array = Decompress(data.Image.ByteArray);
+            byte[] array = Decompress(data.UDPTravelData.ByteArray);
 
             //for (int i = 0; i < len; i++)
             //{
@@ -195,7 +328,7 @@ namespace RemoteClient
             }
             //}
             Marshal.Copy(data0, 0, bmpData0.Scan0, len);
-            Globals.primaryImage.UnlockBits(bmpData0);
+            Globals.bmpSurface.UnlockBits(bmpData0);
             locked = false;
         }
         static byte[] Decompress(byte[] gzip)
@@ -238,7 +371,7 @@ namespace RemoteClient
             arr[0] = e.X;
             arr[1] = e.Y;
 
-            ListenService.SendLidgrenMessage(new Data() { cmdCommand = Command.Move, Image = new TravelImage() { ByteArray = ObjectToByteArray(arr) } }, ListenService.GetPartnerEndPoint());
+            ListenService.SendLidgrenMessage(new TransferData() { cmdCommand = Command.Move,  UDPTravelData   = new TravelImage() { ByteArray = ObjectToByteArray(arr) } }, ListenService.GetPartnerEndPoint());
         }
 
 
@@ -256,45 +389,43 @@ namespace RemoteClient
 
         private void screenBox_MouseClick(object sender, MouseEventArgs e)
         {
-
-            Data d = new Data() { cmdCommand = Command.LClick };
+            TransferData d = new TransferData() { cmdCommand = Command.LClick };
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                d = new Data() { cmdCommand = Command.LClick };
+                d = new TransferData() { cmdCommand = Command.LClick };
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
-                d = new Data() { cmdCommand = Command.RClick };
+                d = new TransferData() { cmdCommand = Command.RClick };
 
             ListenService.SendLidgrenMessage(d, ListenService.GetPartnerEndPoint());
         }
 
         private void screenBox_MouseDown(object sender, MouseEventArgs e)
         {
-
-            Data d = new Data() { cmdCommand = Command.LDown };
+            TransferData d = new TransferData() { cmdCommand = Command.LDown };
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                d = new Data() { cmdCommand = Command.LDown };
+                d = new TransferData() { cmdCommand = Command.LDown };
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
-                d = new Data() { cmdCommand = Command.RDown };
+                d = new TransferData() { cmdCommand = Command.RDown };
 
             ListenService.SendLidgrenMessage(d, ListenService.GetPartnerEndPoint());
         }
 
         private void screenBox_MouseUp(object sender, MouseEventArgs e)
         {
-            Data d = new Data() { cmdCommand = Command.LUp };
+            TransferData d = new TransferData() { cmdCommand = Command.LUp };
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                d = new Data() { cmdCommand = Command.LUp };
+                d = new TransferData() { cmdCommand = Command.LUp };
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
-                d = new Data() { cmdCommand = Command.RUp };
+                d = new TransferData() { cmdCommand = Command.RUp };
 
             ListenService.SendLidgrenMessage(d, ListenService.GetPartnerEndPoint());
-
         }
 
         private void ScreenCapture_FormClosing(object sender, FormClosingEventArgs e)
         {
             Globals.service.stop();
-            e.Cancel = true;
+            e.Cancel = true;            
             this.Hide();
+            Globals.IsOpen = false;
         }
 
         private void ScreenCapture_Paint(object sender, PaintEventArgs e)
@@ -315,21 +446,9 @@ namespace RemoteClient
             //formGraphics.DrawString("D(1900,970.0F)", drawFont, drawBrush, drawPoint);
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void ScreenCapture_Load(object sender, EventArgs e)
         {
-            Data d = new Data();
-            d.Image = new TravelImage();
-            Bitmap B = new Bitmap(@"C:\temp\imgFHDLimited.bmp");
-            byte[] byt;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                B.Save(ms, ImageFormat.Bmp);
-                byt = ms.ToArray();
-            }
 
-            d.Image.ByteArray = byt;
-
-            this.ImageChanged(d);            
         }
     }
 }

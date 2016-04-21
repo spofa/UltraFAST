@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="NotSent4LongTime" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="QueueExpiryTime" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">250</Value>
     </Setting>
     <Setting Name="EnSendNotSent4LongTiles" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EnAlwaysSendChangedTiles" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

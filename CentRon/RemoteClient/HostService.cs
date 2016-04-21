@@ -33,7 +33,6 @@ namespace RemoteClient
         private bool run = false;
         private Thread theThread;
 
-
         private dojo ImageDifference;
         private int ScreenClientX = 1920;           //Sizes of the client and our screen
         private int ScreenClientY = 1080;
@@ -42,19 +41,116 @@ namespace RemoteClient
         private int Padding = 3;
         private bool IsMetro = false;               //Flag for windows metro mode so we can nudge pen type devices to scroll the edge of the sceen 
         public int imageDelay = 2000;
+        System.Net.IPEndPoint endpoint;
         private PixelFormat ImageResoloution = PixelFormat.Format16bppRgb555;// PixelFormat.Format32bppArgb;
+        private bool requestfromClient = false;
+        private Command ClientRequestCommand = Command.NULL;
 
+        private bool ProcessingClientRequest = false;
+        private double LatestClientRequest = 0;
+        private double InProcessClientRequest = 0;
+        private bool CaptureSettingsInitialized = false;
         public HostService() { }
-
-        public void OnData(Data data)
+        private DateTime LastProcessedRequestTime = DateTime.Now;
+        /// <summary>
+        /// Screen Publisher
+        /// </summary>
+        /// <param name="data"></param>
+        public void OnData(TransferData data)
         {
             if (data == null) { return; }
 
             switch (data.cmdCommand)
             {
-                case Command.Read:
-                    Globals.AppForm.PrintMessage(data.strMessage);
-                    ChkAndTransmitCapturedTiles(Command.ReadResponse, data.strName);
+                case Command.Settings:
+                    if (data.Settings != null)
+                    {
+                        Globals.Settings = data.Settings;
+                        ListenService.SendLidgrenMessage(new TransferData()
+                        {
+                            cmdCommand = Command.SettingsReceived,
+                            strMessage = "Settings received !!-- starting server",
+                        }, ListenService.GetPartnerEndPoint(), Lidgren.Network.NetDeliveryMethod.ReliableOrdered);
+
+                        this.start();
+                    }
+                    break;
+
+
+                case Command.FullRead:
+                    if (Globals.Settings.SendingMethod == SendingMethods.Pull)
+                    {
+                        //If already processing skip new request
+                        if (ProcessingClientRequest == true) return;
+
+                        //If new request comes fast, skip it
+                        if (DateTime.Now.Subtract(LastProcessedRequestTime).TotalMilliseconds < Globals.Settings.UpdateFrequency) return;
+
+                        ProcessingClientRequest = true;
+                        //Print Message
+                        Globals.AppForm.PrintMessage(data.strMessage + "Req No " + data.RequestNo);
+                        //Transmit On Timer
+                        requestfromClient = true;
+                        ClientRequestCommand = data.cmdCommand;
+                        LatestClientRequest = data.RequestNo;
+                        CaptureImage(false);
+                        ProcessingClientRequest = false;
+
+                        //Update Last Request Time
+                        LastProcessedRequestTime = DateTime.Now;
+                    }
+                    break;
+                case Command.ReadPartial:
+                    if (Globals.Settings.SendingMethod == SendingMethods.Pull)
+                    {
+                        //If already processing skip new request
+                        if (ProcessingClientRequest == true) return;
+
+                        //If new request comes fast, skip it
+                        if (DateTime.Now.Subtract(LastProcessedRequestTime).TotalMilliseconds < Globals.Settings.UpdateFrequency) return;
+
+                        ProcessingClientRequest = true;
+
+
+                        //Print Message
+                        Globals.AppForm.PrintMessage(data.strMessage + "Req No " + data.RequestNo);
+                        //Transmit On Timer
+                        requestfromClient = true;
+                        ClientRequestCommand = data.cmdCommand;
+                        LatestClientRequest = data.RequestNo;
+                        CaptureImage(false);
+
+                        ProcessingClientRequest = false;
+
+                        //Update Last Request Time
+                        LastProcessedRequestTime = DateTime.Now;
+                    }
+                    break;
+                case Command.ReadTile:
+                    if (Globals.Settings.SendingMethod == SendingMethods.Pull)
+                    {
+
+                        //If already processing skip new request
+                        if (ProcessingClientRequest == true) return;
+
+                        //If new request comes fast, skip it
+                        if (DateTime.Now.Subtract(LastProcessedRequestTime).TotalMilliseconds < Globals.Settings.UpdateFrequency) return;
+
+                        ProcessingClientRequest = true;
+
+                        //Print Message
+                        Globals.AppForm.PrintMessage(data.strMessage + "Req No " + data.RequestNo);
+                        //Transmit On Timer
+                        requestfromClient = true;
+                        ClientRequestCommand = data.cmdCommand;
+                        LatestClientRequest = data.RequestNo;
+                        CaptureImage(false);
+
+                        ProcessingClientRequest = false;
+
+                        //Update Last Request Time
+                        LastProcessedRequestTime = DateTime.Now;
+                    }
                     break;
                 case Command.Move:
                     MouseMove(data);
@@ -64,121 +160,256 @@ namespace RemoteClient
                 case Command.RClick:
                 case Command.RDown:
                 case Command.RUp:
-                    // MouseClick(data);
+                    MouseClick(data);
                     break;
                 case Command.Disconnect:
-                    ChkAndTransmitCapturedTiles(Command.ReadResponse, data.strName);
                     Globals.AppForm.PrintMessage(data.strMessage);
                     stop();
                     break;
-
                 default: break;
             }
         }
 
         public void start()
         {
-            if (theThread == null)
-            {
-                run = true;
-                theThread = new Thread(new ThreadStart(SGMainLoop));
+            endpoint = ListenService.GetPartnerEndPoint();
 
-                theThread.Start();
+            if (Globals.Settings.SendingMethod == SendingMethods.Push)
+            {
+                if (theThread == null)
+                {
+                    run = true;
+                    theThread = new Thread(new ThreadStart(SGMainLoop));
+                    theThread.Start();
+                }
             }
+
         }
 
         DateTime tcapturePrevious = DateTime.Now;
 
+        public bool SendWhenClientPolls = true;
+
+        //1920-1080
+        //1366-768
+        //1280-720
+        public int ScrSzX = 1366;
+        public int ScrSzY = 768;
+        MainApplication FastCapture = new MainApplication();
         public void SGMainLoop()
         {
             System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            MainApplication FastCapture = new MainApplication();
-            bool firstCapture = false;
+
+            //Processing Class
+
+            CaptureImage(true);
+        }
+
+
+        private void InitializeCaptureSettings()
+        {
+            //Reduce all tiles not only changed ones
+            FastCapture.ReduceAllTiles = true;
+
+            //Set Scale Size
+            FastCapture.def_maxAllowedScrSz4TransmitX = Globals.Settings.ScaleDownSize.Width;
+            FastCapture.def_maxAllowedScrSz4TransmitY = Globals.Settings.ScaleDownSize.Height;
+
+            //Set number of tile
+            //FastCapture.nTileTXSzXPixels = 256;
+            //FastCapture.nTileTXSzYPixels = 256;
+            FastCapture.nRowsDefault = Globals.Settings.Rows;
+            FastCapture.nColoumsDefault = Globals.Settings.Columns;
+
+            //Set JPG Quality
+            FastCapture.JPEGConversionQuality = Globals.Settings.JPEGQuality;
+            FastCapture.EnableJPEGConversion = Globals.Settings.ConvertToJPEG;
+            FastCapture.Is8BitQuantize = Globals.Settings.Is8BitQuantize;
+            FastCapture.EnableCompression = Globals.Settings.CompressTiles;
+
+            //Initialize Settings
+            FastCapture.ReInitializeAndReadSettings();
+
+            //Configure FPS
+            Globals.FPS = 15.0;
+        }
+
+
+        private void CaptureImage(bool InfLooping)
+        {
+
+            if (!CaptureSettingsInitialized) { InitializeCaptureSettings(); CaptureSettingsInitialized = true; }
+
+
+            #region "Initialie Row/Coloum Of Local App"      
+            if (Globals.TileArray == null)
+            {
+                Globals.rows = FastCapture.nRowsDefault;
+                Globals.cols = FastCapture.nColoumsDefault;
+                Globals.TileArray = new TravelImage[Globals.rows * Globals.cols];
+
+                for (int i = 0; i < (Globals.rows * Globals.cols); i++)
+                {
+                    Globals.TileArray[i] = new TravelImage();
+                }
+            }
+            #endregion
+
             bool IsImageGaptured = false;
 
+            bool run = true;
+
+            //Continious Loop
             while (run)
             {
-                //Initialie Row/Coloum Of Local App
-                if (Globals.TileArray == null)
-                {
-                    Globals.rows = MainApplication.nRows;
-                    Globals.cols = MainApplication.nCols;
-                    Globals.TileArray = new TravelImage[Globals.rows * Globals.cols];
+                run = InfLooping;
 
-                    for (int i = 0; i < (Globals.rows * Globals.cols); i++)
-                    {
-                        Globals.TileArray[i] = new TravelImage();
-                    }
-
-                    //Continue While Loop
-                    continue;
-                }
-
-                //Capture, tile, difference
+                //Capture/Tile And Set Flag
                 DateTime tcapture = DateTime.Now;
                 TimeSpan span = tcapture.Subtract(tcapturePrevious);
-                IsImageGaptured = false;
-                if (span.Milliseconds >= Globals.TFrameGap)
+                if (!InfLooping || (span.TotalMilliseconds >= Globals.Settings.UpdateFrequency))
                 {
                     DateTime tnow = DateTime.Now;
 
                     //Fast Capture, Tile And Difference
                     Object Dummy = null;
                     FastCapture.Execute(ref Dummy);
-                    firstCapture = true;
-                    IsImageGaptured = true;
 
-                    int mils = DateTime.Now.Subtract(tnow).Milliseconds;
+                    //Globals.AppForm.PrintMessage("Image captured");
+                    double mils = DateTime.Now.Subtract(tnow).TotalMilliseconds;
                     tcapturePrevious = DateTime.Now;
+
+                    //Set Flag for Capture Done
+                    IsImageGaptured = true;
                 }
 
-                //Iterate each tile and copy to local
-                if (firstCapture && IsImageGaptured)
+                //Transmit If Captured
+                if (IsImageGaptured)
                 {
-                    FetchTilesAndCallTransmit();
+                    if (Globals.Settings.SendingMethod == SendingMethods.Push)
+                    {
+                        //Transmit On Timer
+                        FetchTilesAndCallTransmit(ScrSzX, ScrSzY, Command.ReadPartial);
+                    }
+
+                    if (requestfromClient == true)
+                    {
+                        requestfromClient = false;
+                        InProcessClientRequest = LatestClientRequest;
+                        FetchTilesAndCallTransmit(ScrSzX, ScrSzY, ClientRequestCommand);
+                    }
+
+                    //Enable Next Cature
+                    IsImageGaptured = false;
                 }
             }
+
         }
 
-        private void FetchTilesAndCallTransmit()
+
+        /// <summary>
+        /// Check and Transmit
+        /// </summary>
+        /// <param name="SendSizeX"></param>
+        /// <param name="SendSizeY"></param>
+        private void FetchTilesAndCallTransmit(int SendSizeX, int SendSizeY, Command RequsetType)
         {
-        	//Read Tiles from UltraFAST
+
+            #region "Move Processed Tiles From UltraFAST Logic
             foreach (ROIArea roiAreaTile in MainApplication.DSKTopTileRegions)
             {
+                //Current tile to send
                 TravelImage TImg = Globals.TileArray[roiAreaTile.RgnIndex];
 
-                //Set up image to send
-                byte[] bytArray;
-                using (MemoryStream ms = new MemoryStream())
+                //Either used compressed image or original tile (based on settings)
+                if (Globals.Settings.CompressTiles)
                 {
-                    Bitmap bmpTransmit = roiAreaTile.bmpToTransmit;
-
-                    bmpTransmit.Save(ms, ImageFormat.Jpeg);
-
-                    bytArray = ms.ToArray();
+                    TImg.ByteArray = roiAreaTile.byteArrayToTransmit;
                 }
-                TImg.ByteArray = bytArray;
+                else
+                {
+                    //Convert its image to byte array
+                    byte[] bytArray;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Bitmap bmpTransmit = roiAreaTile.bmpToTransmit;
+                        if (Globals.Settings.ConvertToJPEG == true)
+                        {
+                            bmpTransmit.Save(ms, ImageFormat.Jpeg);
+                        }
+                        else
+                        {
+                            bmpTransmit.Save(ms, ImageFormat.Bmp);
+                        }
+                        bytArray = ms.ToArray();
+                    }
+                    TImg.ByteArray = bytArray;
+                }
 
-                //Set X, Y Coordinate
-                TImg.x = roiAreaTile.Left;
-                TImg.y = roiAreaTile.Top;
+                //Set X, Y Coordinate for Plotting Tile
+                TImg.Left = roiAreaTile.Left;
+                TImg.Top = roiAreaTile.Top;
+                TImg.Height = roiAreaTile.Height;
+                TImg.Width = roiAreaTile.Width;
+
+
+                //Set original image size
+                TImg.DskHeight = roiAreaTile.DskHeight;
+                TImg.DskWidth = roiAreaTile.DskWidth;
+                TImg.ResizedHeight = SendSizeY;
+                TImg.ResizedWidth = SendSizeX;
+
+                //Set nRows and nCols
+                TImg.nRows = Globals.rows;
+                TImg.nCols = Globals.cols;
 
                 //Put Flag for Changed Image
-                TImg.IsImageChanged = roiAreaTile.IsROITileChanged;
+                TImg.IsTileChanged = roiAreaTile.IsROITileChanged;
 
                 //Update the capture time
                 TImg.CapturedTime = DateTime.Now;
             }
+            #endregion
 
-            //Send logic for images
-            ChkAndTransmitCapturedTiles(Command.ReadResponse, "pri");
+            //Transmission Logic for Tiles
+            ChkAndTransmitCapturedTiles(RequsetType);
+
+            //Flush All Send Queue (Immediate Send)
+            ListenService.LClient.FlushSendQueue();
         }
 
-        private void ChkAndTransmitCapturedTiles(Command cmd, string reqType)
+        private void ChkAndTransmitCapturedTiles(Command RequsetType)
         {
             try
             {
-                //Iterate through each tile in the collection
+
+                int TotalTileToSend = -1;
+
+                #region "Count Total Tiles To Be Sent for This Refresh"
+                if (TotalTileToSend != -1)
+                {
+                    for (int idxTile = 0; idxTile < Globals.TileArray.Length; idxTile++)
+                    {
+                        DateTime dtCurrTile = DateTime.Now;
+                        //Get properties of current tile into variables (saves time)
+                        TravelImage iTile = Globals.TileArray[idxTile];   //Our tile
+                        bool IsTileChanged = iTile.IsTileChanged;                                                   //Changed or not
+                        bool IsTileDeadB4Sending = iTile.ExpiredInQueue(dtCurrTile, Globals.QueueExpiryTime);       //Expired or not
+                        bool IsTileNotSend4Long = iTile.TooMuchDelayedInSend(dtCurrTile, Globals.NotSent4LongTime); //Resent delay
+
+                        if (RequsetType == Command.ReadPartial)
+                        {
+                            //Send only changes tile
+                            if (IsTileChanged || IsTileNotSend4Long)
+                            {
+                                TotalTileToSend = TotalTileToSend + 1;
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region "Send all tiles for 1 Screen or 1 Request"
                 for (int idxTile = 0; idxTile < Globals.TileArray.Length; idxTile++)
                 {
                     //Timing when iTile gets addressed by sending routine. Otherwise check expiry etc
@@ -186,44 +417,64 @@ namespace RemoteClient
 
                     //Get properties of current tile into variables (saves time)
                     TravelImage iTile = Globals.TileArray[idxTile];   //Our tile
-                    bool IsTileChanged = iTile.IsImageChanged;                                                  //Changed or not
-                    bool IsTileDeadB4Sending = iTile.ExpiredInQueue(dtCurrTile, Globals.QueueExpiryTime);       //Expired or not
-                    bool IsTileNotSend4Long = iTile.TooMuchDelayedInSend(dtCurrTile, Globals.NotSent4LongTime);//Resent delay
+                    bool IsTileChanged = iTile.IsTileChanged;                                                   //Changed or not
+                    
+                    bool IsTileDeadB4Sending = iTile.ExpiredInQueue(dtCurrTile, Globals.QueueExpiryTime);       //Expired or not (Captured)
+                    bool IsTileNotSend4Long = iTile.TooMuchDelayedInSend(dtCurrTile, Globals.NotSent4LongTime); //Resent delay (Previous Send)
 
-                    //If a tile is dead (not sent for long) then we must send it (provided this feature is turned on)
-                    if(IsTileNotSend4Long && Properties.Settings.Default.EnSendNotSent4LongTiles)
+                    if (RequsetType == Command.ReadPartial)
                     {
-                        //Send and proceed to next tile
-                        TransmitTile(cmd, idxTile); continue;
-                    }
-
-                    //If a tile is changed (not-expired should be immediately sent, expired ones not to sent unless overridden)
-                    //If tile is unchanged (not-expired not to be send unless overridden, expired not to be send unless overridden)
-                    if(IsTileChanged && !IsTileDeadB4Sending)
-                    {
-                        //Send and proceed to next tile
-                        TransmitTile(cmd, idxTile); continue;
-                    }
-                    else if (IsTileChanged && IsTileDeadB4Sending)
-                    {
-                        //Send only overidden tiles
-                        if(Properties.Settings.Default.EnAlwaysSendChangedTiles)
+                        //Don't Send Expired Tile (Captured Long Back)
+                        if(IsTileDeadB4Sending)
                         {
-                            //Send and proceed to next tile
-                            TransmitTile(cmd, idxTile); continue;
+                            continue;
+                        }
+
+                        //Send only changes tile
+                        if (IsTileChanged || IsTileNotSend4Long)
+                        {
+                            TransmitTile(Command.ReadResponse, idxTile, RequsetType, InProcessClientRequest, TotalTileToSend); continue;
                         }
                     }
-                    else if(!IsTileChanged)
+                    else if (RequsetType == Command.FullRead)
                     {
-                        //Send only overridden tiles
-                        if(Properties.Settings.Default.EnAlwaysSendUnchangedTiles)
-                        {
-                            //Send and proceed to next tile
-                            TransmitTile(cmd, idxTile); continue;
-                        }
+                        TransmitTile(Command.ReadResponse, idxTile, RequsetType, InProcessClientRequest, TotalTileToSend); continue;
                     }
+
+                    ////If a tile is dead (not sent for long) then we must send it (provided this feature is turned on)
+                    //if(IsTileNotSend4Long && Properties.Settings.Default.EnSendNotSent4LongTiles)
+                    //{
+                    //    //Send and proceed to next tile
+                    //    TransmitTile(cmd, idxTile); continue;
+                    //}
+
+                    ////If a tile is changed (not-expired should be immediately sent, expired ones not to sent unless overridden)
+                    ////If tile is unchanged (not-expired not to be send unless overridden, expired not to be send unless overridden)
+                    //if(IsTileChanged && !IsTileDeadB4Sending)
+                    //{
+                    //    //Send and proceed to next tile
+                    //    TransmitTile(cmd, idxTile); continue;
+                    //}
+                    //else if (IsTileChanged && IsTileDeadB4Sending)
+                    //{
+                    //    //Send only overidden tiles
+                    //    if(Properties.Settings.Default.EnAlwaysSendChangedTiles)
+                    //    {
+                    //        //Send and proceed to next tile
+                    //        TransmitTile(cmd, idxTile); continue;
+                    //    }
+                    //}
+                    //else if(!IsTileChanged)
+                    //{
+                    //    //Send only overridden tiles
+                    //    if(Properties.Settings.Default.EnAlwaysSendUnchangedTiles)
+                    //    {
+                    //        //Send and proceed to next tile
+                    //        TransmitTile(cmd, idxTile); continue;
+                    //    }
+                    //}
                 }
-
+                #endregion
 
                 //if(Globals.TotalTiles== Globals.lastTileSent) { Globals.lastTileSent = -1; }
                 //Globals.lastTileSent = Globals.lastTileSent+1;
@@ -236,45 +487,89 @@ namespace RemoteClient
         /// </summary>
         /// <param name="cmd">Command</param>
         /// <param name="iTile">Tile Index</param>
-        private static void TransmitTile(Command cmd, int iTile)
+        private static void TransmitTile(Command cmd, int iTile, Command RequsetType, double RequestNumber, int TotalTiles)
         {
             //Send tile
-            ListenService.SendLidgrenMessage(new Data()
+            ListenService.SendLidgrenMessage(new TransferData()
             {
                 cmdCommand = cmd,
                 strMessage = "Relay from server--",
-                Image = Globals.TileArray[iTile],
-                strName = "pri"
-            }, ListenService.GetPartnerEndPoint(), 
-            Properties.Settings.Default.TileSendingMethod);
+                UDPTravelData = Globals.TileArray[iTile],
+
+                TotalTiles = TotalTiles,
+                ProcessedRequestNo = RequestNumber
+            }, ListenService.GetPartnerEndPoint(),
+            Globals.Settings.TileDeliveryMethod);
+
+
+            Globals.AppForm.PrintMessage("Processed " + " Req No " + RequestNumber);
+
             //Update last sent time
             Globals.TileArray[iTile].PreviousSendTime = DateTime.Now;
         }
 
-        public void MainLoop()
+
+        private static void TransmitFullTile(Command cmd, int iTile, Command RequsetType, double RequestNumber)
         {
-            System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
-            while (run)
+            TravelImage TImg = new TravelImage();
+
+            byte[] bytArray;
+            using (MemoryStream ms = new MemoryStream())
             {
-                DateTime tcapture = DateTime.Now;
-                TimeSpan span = tcapture.Subtract(tcapturePrevious);
-                if (span.Milliseconds >= Globals.TFrameGap)
-                {
-                    DateTime tnow = DateTime.Now;
+                Bitmap bmpTransmit = MainApplication.bmpReduced;
 
-                    CaptureAndSlice();
+                bmpTransmit.Save(ms, ImageFormat.Jpeg);
 
-                    int mils = DateTime.Now.Subtract(tnow).Milliseconds;
-                    tcapturePrevious = DateTime.Now;
-                }
-
-
-                ChkAndTransmitCapturedTiles(Command.ReadResponse, "pri");
+                bytArray = ms.ToArray();
             }
+            TImg.ByteArray = bytArray;
 
 
+
+
+            //Send tile
+            ListenService.SendLidgrenMessage(new TransferData()
+            {
+                cmdCommand = cmd,
+                strMessage = "Relay from server--",
+                UDPTravelData = TImg,
+                ProcessedRequestNo = RequestNumber
+            }, ListenService.GetPartnerEndPoint(),
+            Properties.Settings.Default.TileSendingMethod);
+
+
+            Globals.AppForm.PrintMessage("Processed " + " Req No " + RequestNumber);
+
+            //Update last sent time
+            Globals.TileArray[iTile].PreviousSendTime = DateTime.Now;
         }
+
+
+        //public void MainLoop()
+        //{
+        //    System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+        //    while (run)
+        //    {
+        //        DateTime tcapture = DateTime.Now;
+        //        TimeSpan span = tcapture.Subtract(tcapturePrevious);
+        //        if (span.Milliseconds >= Globals.TFrameGap)
+        //        {
+        //            DateTime tnow = DateTime.Now;
+
+        //            CaptureAndSlice();
+
+        //            int mils = DateTime.Now.Subtract(tnow).Milliseconds;
+        //            tcapturePrevious = DateTime.Now;
+        //        }
+
+
+        //        ChkAndTransmitCapturedTiles("pri");
+        //    }
+
+
+        //}
         private void CaptureAndSlice()
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -282,7 +577,7 @@ namespace RemoteClient
 
             Globals.PreviousImage = CaptureWithWin32API.CaptureFrames();
 
-            Globals.TravelImage.x = 0; Globals.TravelImage.y = 0;
+            Globals.TravelImage.Left = 0; Globals.TravelImage.Top = 0;
             Globals.TravelImage.ByteArray = Cutter.CreateSmaller(Globals.PreviousImage, Globals.Width, Globals.Height);
 
             Cutter.SliceImage(Globals.TravelImage.ByteArray);
@@ -291,7 +586,7 @@ namespace RemoteClient
             double elapsed = (double)stopWatch.ElapsedMilliseconds / 1000.0;
             double fps = (1 / elapsed);
         }
-        
+
         private byte[] Compress(Bitmap Image)
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -312,7 +607,7 @@ namespace RemoteClient
 
             return ms.ToArray();
         }
-        
+
         private Byte[] Quantize(Bitmap source)
         {
             Byte[] byteArray = null;
@@ -406,27 +701,11 @@ namespace RemoteClient
 
             //   return destImage;
         }
-        
+
         static ImageCodecInfo GetEncoder(ImageFormat format)
         {
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
             return codecs.Single(codec => codec.FormatID == format.Guid);
-        }
-        
-        private void StartSendingData()
-        {
-            try
-            {
-                while (true)
-                {
-                    ChkAndTransmitCapturedTiles(Command.ReadResponse, "pri");
-
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-
         }
 
         public byte[] ToByte(object obj)
@@ -596,7 +875,7 @@ namespace RemoteClient
 
         }
 
-        private void MouseClick(Data data)
+        private void MouseClick(TransferData data)
         {
 
             switch (data.cmdCommand)
@@ -627,12 +906,12 @@ namespace RemoteClient
 
         }
 
-        private void MouseMove(Data data)
+        private void MouseMove(TransferData data)
         {
 
             MemoryStream memStream = new MemoryStream();
             BinaryFormatter binForm = new BinaryFormatter();
-            memStream.Write(data.Image.ByteArray, 0, data.Image.ByteArray.Length);
+            memStream.Write(data.UDPTravelData.ByteArray, 0, data.UDPTravelData.ByteArray.Length);
             memStream.Seek(0, SeekOrigin.Begin);
             Object obj = (Object)binForm.Deserialize(memStream);
             if (obj != null)
@@ -641,14 +920,24 @@ namespace RemoteClient
                 Cursor.Position = new Point(arr[0], arr[1]);
             }
         }
-
-
         public void stop()
         {
             run = false;
-            ListenService.SendLidgrenMessage(new Data() { cmdCommand = Command.Disconnect }, ListenService.GetPartnerEndPoint());
+            ListenService.SendLidgrenMessage(new TransferData() { cmdCommand = Command.Disconnect }, ListenService.GetPartnerEndPoint());
 
         }
+
+        public void SendImage()
+        {
+            FetchTilesAndCallTransmit(ScrSzX, ScrSzY, Command.FullRead);
+        }
+
+        public void SendSettings()
+        {
+
+
+        }
+
     }
 
 }

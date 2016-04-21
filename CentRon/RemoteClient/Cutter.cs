@@ -50,14 +50,14 @@ namespace RemoteClient
 
                                     Globals.TileArray[index].ByteArray = outStream.ToArray();
                                     Globals.TileArray[index].CapturedTime = DateTime.Now;
-                                    Globals.TileArray[index].x = x;
-                                    Globals.TileArray[index].y = y;
+                                    Globals.TileArray[index].Left = x;
+                                    Globals.TileArray[index].Top = y;
 
 
                                 }
                                 else
                                 {
-                                    Globals.TileArray[index] = new TravelImage() { ByteArray = outStream.ToArray(), x = x, y = y };
+                                    Globals.TileArray[index] = new TravelImage() { ByteArray = outStream.ToArray(), Left = x, Top = y };
                                 }
 
 

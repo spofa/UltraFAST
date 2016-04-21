@@ -121,15 +121,16 @@ namespace UltraFAST
 			};
 			
 			return true;
-		}
-		
-			
-		/// <summary>
-		/// Captured images in (MainApplication.bmpCaptured) larger than (ReduceToSizeX, ReduceToSizeY) are resized to fit into box 
-		/// </summary>
-		/// <param name="InpImage"></param>
-		/// <returns></returns>
-		private Bitmap BringImageToManageableSize(Bitmap inBitmap)
+        }
+
+
+        /// <summary>
+        /// Captured images in (MainApplication.bmpCaptured) larger than (ReduceToSizeX, ReduceToSizeY) are resized to fit into box 
+        /// </summary>
+        /// <param name="InpImage"></param
+        /// <param name = "MaintainAspect" >If true scaling will maintain aspect</ param >
+        /// <returns></returns>
+        private Bitmap BringImageToManageableSize(Bitmap inBitmap, bool MaintainAspect = false)
 		{		
 			//: Dont Resize Shorter Images, Within (ReduceToSizeX, ReduceToSizeY) Box
 			if((inBitmap.Width <= ReduceToSizeX) && (inBitmap.Height <= ReduceToSizeY)) { goto NoReSizingRequired;}
@@ -137,18 +138,22 @@ namespace UltraFAST
 			//: Compute Target Width and Height for Resizing
 			double tarWidth = 0;
 			double tarHeight = 0;
-			//#1) Over Width
-			if((inBitmap.Width > ReduceToSizeX) && (inBitmap.Height <= ReduceToSizeY)) 
-			{
-				tarWidth = ReduceToSizeX;
-				tarHeight = (tarWidth * inBitmap.Height)/inBitmap.Width;
-			}
-			//#2) Over Height
-			if((inBitmap.Width <= ReduceToSizeX) && (inBitmap.Height > ReduceToSizeY)) 
-			{
-				tarHeight = ReduceToSizeY;
-				tarWidth = (tarHeight * inBitmap.Width)/inBitmap.Height;
-			}
+
+            if (MaintainAspect)
+            {
+                //#1) Over Width
+                if ((inBitmap.Width > ReduceToSizeX) && (inBitmap.Height <= ReduceToSizeY))
+                {
+                    tarWidth = ReduceToSizeX;
+                    tarHeight = (tarWidth * inBitmap.Height) / inBitmap.Width;
+                }
+                //#2) Over Height
+                if ((inBitmap.Width <= ReduceToSizeX) && (inBitmap.Height > ReduceToSizeY))
+                {
+                    tarHeight = ReduceToSizeY;
+                    tarWidth = (tarHeight * inBitmap.Width) / inBitmap.Height;
+                }
+            }
 			//#3) Over Height And Width
 			if((inBitmap.Width > ReduceToSizeX) && (inBitmap.Height > ReduceToSizeY)) 
 			{

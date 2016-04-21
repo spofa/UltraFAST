@@ -18,6 +18,7 @@ using ImageProcessor.Imaging.Formats;
 using ImageProcessor.Processors;
 using AFFilters = AForge.Imaging.Filters;
 using System.Windows.Forms;
+using System.Security.Cryptography;
 
 namespace UltraFAST
 {
@@ -64,20 +65,75 @@ namespace UltraFAST
 			//Retrun calculated stride of image
 			return Result;
 		}
-		
-		/// <summary>
-		/// Fast comparision of two bitmaps (rgb or gray, 1bpp to Nbpp)
-		/// BASED: http://www.dotnetexamples.com/2012/07/fast-bitmap-comparison-c.html
-		/// BASED: http://stackoverflow.com/questions/2031217/what-is-the-fastest-way-i-can-compare-two-equal-size-bitmaps-to-determine-whethe
-		/// 
-		/// !!! If two bitmaps are changed then return true else false.
-		/// </summary>
-		/// <param name="firstBmp">Bitmap-A</param>
-		/// <param name="secondBmp">Bitmap-B</param>
-		/// <param name="UseInternalAlternateLogic">Use Internal Filters</param>
-		/// <param name="percentLinesChanged">If [0.0-1.0] line compare else block compare</param>
-		/// <returns></returns>
-		public unsafe static bool IsBitmapsDiffer(Bitmap firstBmp, 
+
+
+
+        public static bool IsBitmapsDifferNew(Bitmap bmp1, Bitmap bmp2)
+        {
+            bool result = false;
+
+
+            //If matching objects bitmap not changed
+            if (Object.Equals(bmp1, bmp2))
+            {
+                return false;
+            }
+
+            //If any image is null bitmap is changed
+            if (bmp1 == null || bmp2 == null)
+            {
+                return true;
+            }
+
+
+            //Test to see if we have the same size of image
+            if (bmp1.Size != bmp2.Size)
+            {
+                result = true;
+            }
+            else
+            {
+                //Convert each image to a byte array
+                System.Drawing.ImageConverter ic =
+                       new System.Drawing.ImageConverter();
+                byte[] btImage1 = new byte[1];
+                btImage1 = (byte[])ic.ConvertTo(bmp1, btImage1.GetType());
+                byte[] btImage2 = new byte[1];
+                btImage2 = (byte[])ic.ConvertTo(bmp2, btImage2.GetType());
+
+                //Compute a hash for each image
+                SHA256Managed shaM = new SHA256Managed();
+                byte[] hash1 = shaM.ComputeHash(btImage1);
+                byte[] hash2 = shaM.ComputeHash(btImage2);
+
+                //Compare the hash values
+                for (int i = 0; i < hash1.Length && i < hash2.Length
+                                  && result == false; i++)
+                {
+                    if (hash1[i] != hash2[i])
+                        result  = true;
+                }
+            }
+            return result;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Fast comparision of two bitmaps (rgb or gray, 1bpp to Nbpp)
+        /// BASED: http://www.dotnetexamples.com/2012/07/fast-bitmap-comparison-c.html
+        /// BASED: http://stackoverflow.com/questions/2031217/what-is-the-fastest-way-i-can-compare-two-equal-size-bitmaps-to-determine-whethe
+        /// 
+        /// !!! If two bitmaps are changed then return true else false.
+        /// </summary>
+        /// <param name="firstBmp">Bitmap-A</param>
+        /// <param name="secondBmp">Bitmap-B</param>
+        /// <param name="UseInternalAlternateLogic">Use Internal Filters</param>
+        /// <param name="percentLinesChanged">If [0.0-1.0] line compare else block compare</param>
+        /// <returns></returns>
+        public unsafe static bool IsBitmapsDiffer(Bitmap firstBmp, 
 		                                          Bitmap secondBmp,
 		                                          bool UseInternalAlternateLogic = false,
 		                                          double perLinesChanged = 0.0,
@@ -95,15 +151,15 @@ namespace UltraFAST
 			{ 
 				return true; 
 			}
-			
-			//If size or pixelformat doesnot match bitmap is changed
-			if(!firstBmp.Size.Equals(secondBmp.Size) || !firstBmp.PixelFormat.Equals(secondBmp.PixelFormat))
-			{
-				return true;
-			}
-			
-			//Compute size of images
-			int inImgWidth = firstBmp.Width;
+
+            //If size or pixelformat doesnot match bitmap is changed
+            if (!firstBmp.Size.Equals(secondBmp.Size) || !firstBmp.PixelFormat.Equals(secondBmp.PixelFormat))
+            {
+                return true;
+            }
+
+            //Compute size of images
+            int inImgWidth = firstBmp.Width;
 			int inImgHeight = firstBmp.Height;
 			
 			//If UseFastLogic enforce one shot comparision

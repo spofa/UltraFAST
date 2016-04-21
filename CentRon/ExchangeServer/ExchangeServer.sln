@@ -8,8 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteClient", "..\RemoteClient\RemoteClient.csproj", "{9D6717D5-D8E8-4636-8DD9-2DE0B4C13FE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelObjects", "TravelObjects\TravelObjects.csproj", "{430A8EF8-FB62-46DE-9A5B-C32872B88A57}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MirrorDriver", "..\MirrorDriver\MirrorDriver.csproj", "{18D98E23-BBFE-432B-861C-1A1DC4BD302B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8} = {49BA1C69-6104-41AC-A5D8-B54FA9F696E8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckDfMirage", "..\CheckDfMirage\CheckDfMirage.csproj", "{B4C2C444-E78B-419D-9FE6-5F2BB7F95C88}"
 EndProject
@@ -20,6 +21,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCaptureFPS", "ScreenCaptureFPS\ScreenCaptureFPS.csproj", "{2F299953-C54B-46B2-8CEC-50EF20338DD0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraFAST", "..\UltraFAST\UltraFAST\UltraFAST.csproj", "{D7D46B15-0282-4550-B407-6CEC20BD52E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ByteCounter", "..\ByTeCounter\ByteCounter.csproj", "{28E1F111-621E-4257-BDB1-DFE9F912F36A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8} = {49BA1C69-6104-41AC-A5D8-B54FA9F696E8}
+		{9D6717D5-D8E8-4636-8DD9-2DE0B4C13FE0} = {9D6717D5-D8E8-4636-8DD9-2DE0B4C13FE0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +46,6 @@ Global
 		{430A8EF8-FB62-46DE-9A5B-C32872B88A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{430A8EF8-FB62-46DE-9A5B-C32872B88A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{430A8EF8-FB62-46DE-9A5B-C32872B88A57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{18D98E23-BBFE-432B-861C-1A1DC4BD302B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18D98E23-BBFE-432B-861C-1A1DC4BD302B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18D98E23-BBFE-432B-861C-1A1DC4BD302B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18D98E23-BBFE-432B-861C-1A1DC4BD302B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B4C2C444-E78B-419D-9FE6-5F2BB7F95C88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4C2C444-E78B-419D-9FE6-5F2BB7F95C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4C2C444-E78B-419D-9FE6-5F2BB7F95C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,6 +66,10 @@ Global
 		{D7D46B15-0282-4550-B407-6CEC20BD52E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7D46B15-0282-4550-B407-6CEC20BD52E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7D46B15-0282-4550-B407-6CEC20BD52E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28E1F111-621E-4257-BDB1-DFE9F912F36A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28E1F111-621E-4257-BDB1-DFE9F912F36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28E1F111-621E-4257-BDB1-DFE9F912F36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28E1F111-621E-4257-BDB1-DFE9F912F36A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

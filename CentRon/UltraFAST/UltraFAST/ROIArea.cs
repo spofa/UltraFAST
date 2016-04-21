@@ -67,10 +67,15 @@ namespace UltraFAST
 		public Bitmap prevCroppedTileBitmap {get; set;}
 
         /// <summary>
-        /// Final result to be transmitted
+        /// Final result to be transmitted [[If compression is on transmit byteArrayToTransmit rather than bmpToTransmit]]
         /// </summary>
         public Bitmap bmpToTransmit { get; set; }
-		
+
+        /// <summary>
+        /// Final result to be transmitted [[If compression is on transmit byteArrayToTransmit rather than bmpToTransmit]]
+        /// </summary>
+        public byte[] byteArrayToTransmit { get; set; }
+
 		/// <summary>
 		/// If (CroppedTileBitmap != prevCroppedTileBitmap), we make this value true. 
 		/// And this signifies transmission of tile

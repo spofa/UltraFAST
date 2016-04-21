@@ -23,9 +23,9 @@ using System.Windows.Media.Imaging;
 //You also need to add always copy to output directory (C++) opencv
 //files: opencv_core220.dll and opencv_imgproc220.dll
 //NET Emgu.CV's Classes Those Are Used In This Project (First Three Are Basics)
-using Emgu.CV;
-using Emgu.CV.UI;
-using Emgu.CV.Structure;
+//using Emgu.CV;
+//using Emgu.CV.UI;
+//using Emgu.CV.Structure;
 
 namespace UltraFAST
 {

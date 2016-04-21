@@ -25,7 +25,7 @@ namespace RemoteClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public double NotSent4LongTime {
             get {
                 return ((double)(this["NotSent4LongTime"]));
@@ -37,7 +37,7 @@ namespace RemoteClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
         public double QueueExpiryTime {
             get {
                 return ((double)(this["QueueExpiryTime"]));
@@ -49,7 +49,7 @@ namespace RemoteClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool EnSendNotSent4LongTiles {
             get {
                 return ((bool)(this["EnSendNotSent4LongTiles"]));

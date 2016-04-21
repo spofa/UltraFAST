@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using ImageProcessor.Imaging.Quantizers;
 using ImageProcessor.Imaging.Quantizers.WuQuantizer;
 
@@ -96,10 +97,39 @@ namespace UltraFAST
 			//Variables For AForge.NET
 			ColorImageQuantizer ciq = null;
 			Color[] colorTable = null;
+			Bitmap outBitmap = null;
 			
+//16 bit per pixel in NET
+
 			switch(QuantizerToUse)
 			{
-				case TypeOfQuantizers.ImageProcessor_OctTree:
+				case TypeOfQuantizers.NETFormat16bppRgb555:
+						outBitmap = new Bitmap(InpBitmap.Width, InpBitmap.Height, PixelFormat.Format16bppRgb555);
+						using (Graphics grInpBitmap = Graphics.FromImage(outBitmap)) 
+						{
+						    grInpBitmap.DrawImage(InpBitmap, new Rectangle(0, 0, outBitmap.Width, outBitmap.Height));
+						}
+						bmpConverted = outBitmap;
+					break;
+					
+				case TypeOfQuantizers.NETFormat16bppRgb565:
+						outBitmap = new Bitmap(InpBitmap.Width, InpBitmap.Height, PixelFormat.Format16bppRgb565);
+						using (Graphics grInpBitmap = Graphics.FromImage(outBitmap)) 
+						{
+						    grInpBitmap.DrawImage(InpBitmap, new Rectangle(0, 0, outBitmap.Width, outBitmap.Height));
+						}
+						bmpConverted = outBitmap;
+					break;
+
+                case TypeOfQuantizers.NETFormat8bppIndexed:
+                    Format8bppIndexConverter2 f = new Format8bppIndexConverter2();
+
+                    outBitmap = f.ConvertTo8bppFormat(InpBitmap);
+                    
+                    bmpConverted = outBitmap;
+                    break;
+
+                case TypeOfQuantizers.ImageProcessor_OctTree:
 						OctreeQuantizer OctTreeQuantizer = new OctreeQuantizer(maxColorsPellet, maxColorBits);
 						bmpConverted = OctTreeQuantizer.Quantize(InpBitmap);
 					break;

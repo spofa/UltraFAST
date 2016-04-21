@@ -21,10 +21,7 @@ namespace RemoteClient
     public partial class RemoteClientForm : Form
     {
 
-        ScreenCapture screenForm = null;
-
-
-
+        public ScreenCapture screenForm = null;
 
         delegate void SetTextCallback(TextBox tb, string text);
         int listenport = 65446;
@@ -40,6 +37,8 @@ namespace RemoteClient
             Globals.AppForm = this;
             if (screenForm == null) { screenForm = new ScreenCapture(); }
 
+            ListenService.CloseAllConnections();
+
         }
 
         private void ListenService_UdpSent(object sender, UdpEventArgs e)
@@ -49,7 +48,7 @@ namespace RemoteClient
 
         #region "UDP"
 
-        public void OnData(Data data)
+        public void OnData(TransferData data)
         {
 
             if (data == null) { return; }
@@ -67,21 +66,7 @@ namespace RemoteClient
 
                 case Command.Ping:
 
-                    //  MessageBox.Show(data.strName);
-
-                    if (data.strName == "host")
-                    {
-                        ListenService.IsHost = "yes";
-                        ListenService.StartService();
-                    }
-
-
-                    if (data.strName == "client")
-                    {
-                        ListenService.IsHost = "no";
-                        ListenService.StartService();
-                    }
-
+                    //  MessageBox.Show(data.strName); 
                     string pdata = data.strMessage;
                     string[] lst = pdata.Split(':');
                     string ip = lst[0];
@@ -101,11 +86,29 @@ namespace RemoteClient
                         ListenService.Partner.LocalEndPoint = new IPEndPoint(System.Net.IPAddress.Parse(lip), lcport);
                     }
 
+                    if (data.strName == "host")
+                    {
+                        ListenService.IsHost = "yes";
+                        ListenService.InitializeService();
+                    }
+
+
+                    if (data.strName == "client")
+                    {
+                        ListenService.IsHost = "no";
+
+
+                        ListenService.InitializeService();
+                    }
+
+
+
+
                     SetText(txtRelayBox, "Connecting to " + ListenService.Partner.PublicEndPoint.Address.ToString() + ":" + ListenService.Partner.PublicEndPoint.Port.ToString() + Environment.NewLine);
 
                     Thread.Sleep(1000);
                     ListenService.LClient.Connections[0].Disconnect(""); // DISCONNECT SERVER
-                    Data PartnerData = new Data();
+                    TransferData PartnerData = new TransferData();
                     PartnerData.cmdCommand = Command.NULL;
                     PartnerData.strMessage = "handshake";
                     PartnerData.strName = "handshake";
@@ -125,6 +128,10 @@ namespace RemoteClient
                     {
                         ListenService.ConnectedToPartner = true;
 
+                        if (ListenService.IsHost == "no")
+                        {
+                            Globals.service.SendSettings();
+                        }
                         SetText(txtRelayBox, "handshake from Partner " + data.strName + Environment.NewLine);
                         //MessageBox.Show("Connected To Partner");
                     }
@@ -167,7 +174,9 @@ namespace RemoteClient
             // using (UdpClient client = new UdpClient())
             {
                 IPAddress endp = LocalIPAddress();
-                Data LoginData = new Data();
+                TravelObjects.TransferData test = new TravelObjects.TransferData();
+
+                TravelObjects.TransferData LoginData = new TravelObjects.TransferData();
                 LoginData.cmdCommand = Command.Login;
                 LoginData.strMessage = "Hi";
                 LoginData.strName = listenport.ToString();
@@ -222,7 +231,7 @@ namespace RemoteClient
 
             //  using (UdpClient client = new UdpClient())
             {
-                Data PartnerData = new Data();
+                TransferData PartnerData = new TransferData();
                 PartnerData.cmdCommand = Command.ConnectPartner;
                 PartnerData.strMessage = txtMyID.Text;
                 PartnerData.strName = txtPartnerID.Text;
@@ -243,7 +252,7 @@ namespace RemoteClient
         private void btnSendPartner_Click(object sender, EventArgs e)
         {
 
-            Data PartnerData = new Data();
+            TransferData PartnerData = new TransferData();
             PartnerData.cmdCommand = Command.NULL;
             PartnerData.strMessage = txtpartnerMessage.Text;
             PartnerData.strName = txtpartnerMessage.Text;
@@ -262,6 +271,9 @@ namespace RemoteClient
             try
             {
 
+
+                ListenService.CloseAllConnections();
+
             }
             catch (Exception ex)
             {
@@ -270,7 +282,7 @@ namespace RemoteClient
             }
         }
 
-        private void Partnerclient_DataReceived(Data data)
+        private void Partnerclient_DataReceived(TransferData data)
         {
             try
             {
@@ -322,7 +334,40 @@ namespace RemoteClient
         {
 
             Globals.TravelImage = new TravelImage();
-            btnConnectServer_Click(null, null);
+
+
+            if (!File.Exists(Globals.SettingsPath))
+            {
+                Globals.SaveDefaultConnectionSettings();
+            }
+            else
+            {
+
+                Globals.LoadConnectionSettings();
+
+                if (Globals.Settings != null && Globals.Settings.ResetDefault == true)
+                {
+                    Globals.SaveDefaultConnectionSettings();
+                    Globals.LoadConnectionSettings();
+                }
+            }
+
+
+            if (Globals.Settings.AutoConnectServer == true)
+            {
+
+                if (!string.IsNullOrEmpty(Globals.Settings.ServerIP))
+                {
+                    txtServerIP.Text = Globals.Settings.ServerIP;
+                }
+
+                if (!string.IsNullOrEmpty(txtServerIP.Text))
+                {
+                    btnConnectServer_Click(null, null);
+                }
+                
+
+            }
 
 
         }
@@ -332,12 +377,10 @@ namespace RemoteClient
         private int resolutionY;
 
 
-        delegate void SetScreenUpdate(Data data);
+        delegate void SetScreenUpdate(TransferData data);
 
-
-        public void ScreenUpdate(Data data)
+        public void ScreenUpdate(TransferData data)
         {
-
             if (this.screenForm == null) return;
 
 
@@ -365,7 +408,7 @@ namespace RemoteClient
                     if (IsOpen == false) { this.screenForm.Show(); }
 
 
-                    screenForm.ImageChanged(data);
+                    screenForm.RenderImage(data);
 
                     //BinaryFormatter bFormat = new BinaryFormatter();
                     //MemoryStream ms1 = new MemoryStream(data.ByteArray);
@@ -381,18 +424,23 @@ namespace RemoteClient
             }
             catch (Exception ex) { }
 
-
-
-
-
-
         }
 
         private void ketch_Click(object sender, EventArgs e)
         {
+            Globals.SaveDefaultConnectionSettings();
 
 
+        }
 
+        private void btnConnectPartnerTCP_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSendImage_Click(object sender, EventArgs e)
+        {
+            Globals.service.SendImage();
         }
     }
 

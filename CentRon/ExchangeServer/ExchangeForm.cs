@@ -207,7 +207,7 @@ namespace ExchangeServer
 
             byte[] data = readStream(connection.Socket);
 
-            Data bdata = new Data(data);
+            TransferData bdata = new TransferData(data);
 
 
             if (bdata != null)
@@ -240,7 +240,7 @@ namespace ExchangeServer
             //}
             return data;
         }
-        private void handleTCPInput(Data data, tcpServer.TcpServerConnection connection)
+        private void handleTCPInput(TransferData data, tcpServer.TcpServerConnection connection)
         {
             IPEndPoint RemoteIpEndPoint = (IPEndPoint)connection.Socket.Client.RemoteEndPoint;
 
@@ -253,7 +253,7 @@ namespace ExchangeServer
 
                     RemoteClient rc = new RemoteClient() { IPAddress = RemoteIpEndPoint.Address.ToString(), Port = RemoteIpEndPoint.Port.ToString(), RemoteID = newid.ToString() };
                     Clients.Add(rc);
-                    Data LoginData = new Data();
+                    TransferData LoginData = new TransferData();
                     LoginData.cmdCommand = Command.Login;
                     LoginData.strMessage = "LoggedIn";
                     LoginData.strName = rc.RemoteID;
@@ -268,7 +268,7 @@ namespace ExchangeServer
 
                 case Command.ConnectPartner:
                     RemoteClient partnerclient = Clients.Where(t => t.RemoteID == data.strName).FirstOrDefault();
-                    Data PartnerData = new Data();
+                    TransferData PartnerData = new TransferData();
                     if (partnerclient != null)
                     {
 
@@ -286,7 +286,7 @@ namespace ExchangeServer
                             myremoteclient.LocalPort = myclient.LocalPort;
                         }
 
-                        Data Data = new Data();
+                        TransferData Data = new TransferData();
                         Data.cmdCommand = Command.Ping;
                         Data.strMessage = myclient.Display;
                         byte[] data2 = Data.ToByte();
@@ -342,7 +342,7 @@ namespace ExchangeServer
         }
 
 
-        public static void SendLidgrenMessage(Data PartnerData, NetConnection connection)
+        public static void SendLidgrenMessage(TransferData PartnerData, NetConnection connection)
         {
             NetOutgoingMessage msg = LClient.CreateMessage();
 
@@ -364,7 +364,7 @@ namespace ExchangeServer
 
         }
 
-        public static void SendLidgrenMessage(Data PartnerData, IPEndPoint  host)
+        public static void SendLidgrenMessage(TransferData PartnerData, IPEndPoint  host)
         {
             NetOutgoingMessage msg = LClient.CreateMessage();
 
@@ -382,7 +382,7 @@ namespace ExchangeServer
         private void ParseData(NetIncomingMessage message)
         {
             if (message == null) return;
-            Data data = new Data(message.ReadBytes(message.LengthBytes));
+            TransferData data = new TransferData(message.ReadBytes(message.LengthBytes));
 
 
             switch (data.cmdCommand)
@@ -400,7 +400,7 @@ namespace ExchangeServer
                         LocalPort = data.port
                     };
                     Clients.Add(rc);
-                    Data LoginData = new Data();
+                    TransferData LoginData = new TransferData();
                     LoginData.cmdCommand = Command.Login;
                     LoginData.strMessage = "LoggedIn";
                     LoginData.strName = rc.RemoteID;
@@ -419,7 +419,7 @@ namespace ExchangeServer
                     {
 
 
-                        Data Data = new Data();
+                        TransferData Data = new TransferData();
                         Data.cmdCommand = Command.Ping;
                         Data.strMessage = partnerclient.Display;
                         Data.strName = "client";
@@ -437,7 +437,7 @@ namespace ExchangeServer
                         }
 
                         // Sending Host the IP of remote client , so that Host can also know public IP of its client. 
-                        Data NewData = new Data();
+                        TransferData NewData = new TransferData();
                         NewData.cmdCommand = Command.Ping;
                         NewData.strMessage = myremoteclient.Display;
                         NewData.strName = "host";
