@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html itemscope="" itemtype="http://schema.org/Product"><!-- Update your html tag to include the itemscope and itemtype attributes --><!-- DW6 --><head>
+<!-- Copyright 2005 Macromedia, Inc. All rights reserved. -->
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="ROBOTS" content="NOARCHIVE"> 
+<!-- Add the following three tags inside head -->
+<meta itemprop="name" content="UDT">
+<meta itemprop="description" content="UDT: UDP-based Data Transfer">
+<title>UDT: Breaking the Data Transfer Bottleneck</title>
+<link rel="stylesheet" href="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/emx_nav_left.css" type="text/css">
+<script async="" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/cbgapi.loaded_1"></script><script async="" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/cbgapi.loaded_0"></script><script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/widgets.js" id="twitter-wjs"></script><script type="text/javascript" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/p7_eqCols2_10.js"></script>
+<script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/secureAnonymousFramework"></script><script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/button.js" async="" charset="utf-8" type="text/javascript"></script><style type="text/css">* html #li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link{height:1% !important;}#li_ui_li_gen_1460474990071_0{position:relative !important;overflow:visible !important;display:block !important;}#li_ui_li_gen_1460474990071_0 span{-webkit-box-sizing:content-box !important;-moz-box-sizing:content-box !important;box-sizing:content-box !important;}#li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link{border:0 !important;height:20px !important;text-decoration:none !important;padding:0 !important;margin:0 !important;display:inline-block !important;}#li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link:link, #li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link:visited, #li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link:hover, #li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link:active{border:0 !important;text-decoration:none !important;}#li_ui_li_gen_1460474990071_0 a#li_ui_li_gen_1460474990071_0-link:after{content:"." !important;display:block !important;clear:both !important;visibility:hidden !important;line-height:0 !important;height:0 !important;}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-logo{background-image:url(https://static.licdn.com/scds/common/u/images/apps/connect/sprites/sprite_connect_v14.png) !important;background-position:0px -593px !important;background-repeat:no-repeat !important;background-color:#0077b5 !important;background-size:initial !important;cursor:pointer !important;border:0 !important;border-right:1px solid #066094 !important;text-indent:-9999em !important;overflow:hidden !important;padding:0 !important;margin:0 !important;position:absolute !important;left:0px !important;top:0px !important;display:block !important;width:20px !important;height:20px !important;float:right !important;border-radius:2px !important;-moz-border-radius:2px !important;border-top-right-radius:2px !important;border-bottom-right-radius:2px !important;-moz-border-radius-topright:2px !important;-moz-border-radius-bottomright:2px !important;}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title{color:#fff !important;cursor:pointer !important;display:block !important;white-space:nowrap !important;float:left !important;margin-left:1px !important;vertical-align:top !important;overflow:hidden !important;text-align:center !important;height:18px !important;padding:0 4px 0 23px !important;border:1px solid #000 !important;border-top-color:#0077b5 !important;border-right-color:#0077b5 !important;border-bottom-color:#0077b5 !important;border-left-color:#0077b5 !important;text-shadow:0 -1px #005887 !important;line-height:20px !important;border-radius:2px !important;-moz-border-radius:2px !important;border-top-right-radius:2px !important;border-bottom-right-radius:2px !important;-moz-border-radius-topright:2px !important;-moz-border-radius-bottomright:2px !important;background-color:#0077b5 !important;background-image:-moz-linear-gradient(top, #0077b5 0%, #0077b5 100%) !important;}#li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title{border:1px solid #000 !important;border-top-color:#0369a0 !important;border-right-color:#0369a0 !important;border-bottom-color:#0369a0 !important;border-left-color:#0369a0 !important;background-color:#0369a0 !important;background-image:-moz-linear-gradient(top, #0369a0 0%, #0369a0 100%) !important;}#li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title, #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title{color:#fff !important;border:1px solid #000 !important;border-top-color:#066094 !important;border-right-color:#066094 !important;border-bottom-color:#066094 !important;border-left-color:#066094 !important;background-color:#066094 !important;background-image:-moz-linear-gradient(top, #066094 0%, #066094 100%) !important;}.IN-shadowed #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title{}.IN-shadowed #li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title{}.IN-shadowed #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title, .IN-shadowed #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title{}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text, #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;font-size:11px !important;font-family:Arial, sans-serif !important;font-weight:bold !important;font-style:normal !important;-webkit-font-smoothing:antialiased !important;display:inline-block !important;background:transparent none !important;vertical-align:top !important;height:18px !important;line-height:20px !important;float:none !important;}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text strong{font-weight:bold !important;}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text em{font-style:italic !important;}#li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title-text, #li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;}#li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title-text, #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title-text, #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title-text *, #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;}#li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title #li_ui_li_gen_1460474990071_0-mark{display:inline-block !important;width:0px !important;overflow:hidden !important;}.success #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title{color:#fff !important;border-top-color:#0077b5 !important;border-right-color:#0077b5 !important;border-bottom-color:#0077b5 !important;border-left-color:#0077b5 !important;background-color:#0077b5 !important;background-image:-moz-linear-gradient(top, #0077b5 0%, #0077b5 100%) !important;}.success #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text, .success #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;}.IN-shadowed .success #li_ui_li_gen_1460474990071_0 #li_ui_li_gen_1460474990071_0-title{}.success #li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title{color:#fff !important;border-top-color:#0369a0 !important;border-right-color:#0369a0 !important;border-bottom-color:#0369a0 !important;border-left-color:#0369a0 !important;background-color:#0369a0 !important;background-image:-moz-linear-gradient(top, #0369a0 0%, #0369a0 100%) !important;}.success #li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title-text, .success #li_ui_li_gen_1460474990071_0.hovered #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;}.success #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title, .success #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title{color:#fff !important;border-top-color:#066094 !important;border-right-color:#066094 !important;border-bottom-color:#066094 !important;border-left-color:#066094 !important;background-color:#066094 !important;background-image:-moz-linear-gradient(top, #066094 0%, #066094 100%) !important;}.success #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title-text, .success #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title-text, .success #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title-text *, .success #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title-text *{color:#fff !important;}.IN-shadowed .success #li_ui_li_gen_1460474990071_0.clicked #li_ui_li_gen_1460474990071_0-title, .IN-shadowed .success #li_ui_li_gen_1460474990071_0.down #li_ui_li_gen_1460474990071_0-title{}#li_ui_li_gen_1460474990100_1-container.IN-right {display:inline-block !important;float:left !important;overflow:visible !important;position:relative !important;height:20px !important;padding-left:2px !important;line-height:1px !important;cursor:pointer !important;}#li_ui_li_gen_1460474990100_1.IN-right {display:block !important;float:left !important;height:20px !important;margin-right:4px !important;padding-right:4px !important;background-image:url(https://static.licdn.com/scds/common/u/images/apps/connect/sprites/sprite_connect_v14.png) !important;background-color:transparent !important;background-repeat:no-repeat !important;background-position:right -447px !important;}#li_ui_li_gen_1460474990100_1-inner.IN-right {display:block !important;float:left !important;padding-left:8px !important;text-align:center !important;background-image:url(https://static.licdn.com/scds/common/u/images/apps/connect/sprites/sprite_connect_v14.png) !important;background-color:transparent !important;background-repeat:no-repeat !important;background-position:0px -426px !important;}#li_ui_li_gen_1460474990100_1-content.IN-right {display:inline !important;font-size:11px !important;color:#4e4e4e !important;font-weight:bold !important;font-family:Arial, sans-serif !important;line-height:20px !important;padding:0 5px 0 5px !important;}#li_ui_li_gen_1460474990100_1-container.IN-empty {display:none !important;}#li_ui_li_gen_1460474990100_1-container.IN-hidden #li_ui_li_gen_1460474990100_1 {display:none !important;}</style></head>
+
+<body onload="P7_equalCols2(0,'pageNav','P','contentframe','P')">
+
+
+<div id="masthead">
+</div>
+<div id="logo"><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/logo.gif" height="50" width="900"></div>
+<!-- end masthead -->
+
+<div id="pagecell">
+  <!--pagecell1-->
+	
+  <div id="pageNav">
+    <div id="sectionLinks"> 
+      <div align="right"><a href="http://udt.sourceforge.net/index.html">Home&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/news.html">News&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/software.html">Software&nbsp;&nbsp;</a><a href="http://udt.sourceforge.net/license.html">Licensing&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/doc.html">Documentation&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/support.html">Support&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/people.html">People&nbsp;&nbsp;</a> <a href="http://udt.sourceforge.net/poweredby.html">PoweredBy UDT&nbsp;&nbsp;</a></div>
+    </div>
+	
+    <div id="relatedLinks"> 
+      <div align="right"><a href="http://sourceforge.net/projects/udt" target="_blank">SourceForge Project&nbsp;&nbsp;</a> <a href="http://udt.cvs.sourceforge.net/udt/" target="_blank">CVS&nbsp;&nbsp;</a> <a href="https://sourceforge.net/p/udt/git" target="_blank">Git&nbsp;&nbsp;</a> <a href="https://sourceforge.net/projects/udt/forums" target="_blank">Forum&nbsp;&nbsp;</a> <a href="http://sector.sourceforge.net/" target="_blank">Sector/Sphere&nbsp;&nbsp;</a> <a href="" target="_blank">&nbsp;&nbsp;</a> <a href="http://verycloud.wordpress.com/" target="_blank">The VeryCloud Blog&nbsp;&nbsp;</a></div>
+    </div>
+   
+    <div id="advert"> <a href="http://sourceforge.net/"><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/sflogo.png" alt="SourceForge.net Logo" border="0" height="37" width="125"></a> </div>
+
+    <div id="advert"> 
+	<a name="fb_share" type="button_count" href="http://www.facebook.com/sharer.php">Share</a>
+	<script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/FB.htm" type="text/javascript"></script>
+
+	<br>
+	<br>
+    <iframe src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/tweet_button.htm" title="Twitter Tweet Button" style="position: static; visibility: visible; width: 61px; height: 20px;" class="twitter-share-button twitter-share-button-rendered twitter-tweet-button" allowtransparency="true" scrolling="no" id="twitter-widget-0" frameborder="0"></iframe>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	<br>
+	<br>
+    <script gapi_processed="true" type="text/javascript" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/plusone.js"></script>
+    <div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background: transparent none repeat scroll 0% 0%; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 106px; height: 24px;"><iframe title="+1" data-gapiattached="true" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/fastbutton.htm" name="I0_1460474986722" id="I0_1460474986722" vspace="0" tabindex="0" style="position: static; top: 0px; width: 106px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 24px;" scrolling="no" marginwidth="0" marginheight="0" hspace="0" frameborder="0" width="100%"></iframe></div>
+
+	<br>
+	<br>
+    <script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/in.js" type="text/javascript"></script>
+    <span class="IN-widget" style="line-height: 1; vertical-align: baseline; display: inline-block; text-align: center;"><span style="padding: 0px ! important; margin: 0px ! important; text-indent: 0px ! important; display: inline-block ! important; vertical-align: baseline ! important; font-size: 1px ! important;"><span id="li_ui_li_gen_1460474990071_0"><a id="li_ui_li_gen_1460474990071_0-link" href="javascript:void(0);"><span id="li_ui_li_gen_1460474990071_0-logo">in</span><span id="li_ui_li_gen_1460474990071_0-title"><span id="li_ui_li_gen_1460474990071_0-mark"></span><span id="li_ui_li_gen_1460474990071_0-title-text">Share</span></span></a></span></span><span style="padding: 0px ! important; margin: 0px ! important; text-indent: 0px ! important; display: inline-block ! important; vertical-align: baseline ! important; font-size: 1px ! important;"><span id="li_ui_li_gen_1460474990100_1-container" class="IN-right"><span id="li_ui_li_gen_1460474990100_1" class="IN-right"><span id="li_ui_li_gen_1460474990100_1-inner" class="IN-right"><span id="li_ui_li_gen_1460474990100_1-content" class="IN-right">32</span></span></span></span></span></span><script type="IN/Share+init" data-counter="right"></script>
+
+	</div><!--ad: social network-->
+	<p style="padding-bottom: 393px;" id="p7eq1">&nbsp;</p>
+  </div> <!--pageNav-->
+  
+  <div id="contentframe">
+
+  <div id="content">
+    <div class="feature"> <a href="http://udt.sourceforge.net/udttcp.jpg" target="_blank"><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/udttcp.jpg" alt="" border="0" height="240" width="320"></a>
+      <h3>UDT: Breaking the Data Transfer Bottleneck </h3>
+      <p>UDT is a reliable UDP based application level data transport   
+protocol for  distributed data intensive applications over wide area   
+high-speed networks. UDT uses UDP to transfer bulk data with its own   
+reliability control and congestion control mechanisms. The new protocol 
+can transfer data at a much higher speed than TCP does.    UDT is also a
+ highly configurable framework that can accommodate various   congestion
+ control algorithms. (<a href="http://udt.sourceforge.net/doc/udt-2009.ppt" target="_blank">Presentation:   PPT 450KB</a> /<a href="http://udt.sourceforge.net/doc/udt-sc08-poster.pdf" target="_blank"> Poster: PDF 435KB </a>)</p>
+
+	  <table border="0" width="400">
+      <tbody><tr>
+         <td width="22"><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/Star.png" alt="award" height="21" width="22"></td>
+         <td width="378"><a href="http://www.hpcwire.com/industry/academia/Open-Cloud-Testbed-Wins-Bandwidth-Challenge-at-SC09-78781077.html" target="_blank">Supercomputing 2009 Bandwidth Challenge Winner</a></td>	  
+      </tr><tr>
+         <td width="22"><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/Star.png" alt="award" height="21" width="22"></td>
+         <td width="378"><a href="http://www.hpcwire.com/offthewire/UIC_Groups_Win_Bandwidth_Challenge_Award.html" target="_blank">Supercomputing 2008 Bandwidth Challenge Winner</a></td>
+      </tr>
+      <tr>
+         <td><img src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/Star.png" alt="award" height="21" width="22"></td>
+         <td><a href="http://www.hpcwire.com/offthewire/17889209.html" target="_blank">Supercomputing 2006 Bandwidth Challenge Winner</a></td>
+      </tr>
+      </tbody></table>
+    </div>
+	  
+    <div class="story">
+      <h3>Key Features</h3>
+      <p><strong>Fast</strong>. UDT is designed for extremely high speed
+ networks and it has been used to support global data transfer of 
+terabyte sized data sets. UDT is the core technology in many commercial 
+WAN acceleration products.</p>
+      <p><strong>Fair and Friendly</strong>. Concurrent UDT flows can share the available bandwidth fairly, while UDT also leaves enough bandwidth for TCP.</p>
+      <p><strong>Easy to Use</strong>. UDT resides completely at the 
+application level. Users can simply download the software and start to 
+use it. No kernel reconfiguration is needed. In addition, UDT's API is 
+very similar to the traditional socket API so that existing applications
+ can be easily modified. </p>
+      <p><strong>Highly Configurable</strong>. UDT supports user defined
+ congestion control algorithms with a simple configuration. Users may 
+also modify UDT to suit various situations. This feature can also be 
+used by students and researchers to investigate new control algorithms.</p>
+      <p><strong>Firewall Friendly</strong>. UDT is completely based on 
+UDP, which makes it easier to traverse the firewall. In addition, 
+multiple UDT flows can share a single UDP port, thus a firewall can open
+ only one UDP port for all UDT connections. UDT also supports rendezvous
+ connection setup.</p>
+      <p><em>UDT is a protocol and library; it does not provide a 
+tool/application for end users directly. If you need a system software 
+to support wide area data storage and distribution, please try <a href="http://sector.sf.net/">Sector</a>. </em></p>
+    </div>
+	</div>
+	
+	<div id="contentpad"></div>
+
+	<div id="content">
+    <div class="story">
+      <table summary="" cellpadding="0" cellspacing="0" width="100%">
+        <tbody><tr valign="top">
+		   <td class="storyLeft" width="29%">
+          	  <p> <a class="capsule">Dec. 29, 2011: UDT v4.10 release!</a>It
+ has been a relatively quiet year on UDT but we have managed to 
+introduce some non-trivial features in version 4.9 and 4.10. We have 
+greatly imroved the epoll API and also added support to non-blocking 
+connect API. In 2012, we will try harder to introduce UDT to more use 
+scenarios. </p>
+   	      </td>
+		  <td class="storyLeft" width="32%">
+           	  <p> <a class="capsule">Dec. 29, 2010: UDT v4.8 release! </a>
+ UDT version 4.8 introduces new epoll API, which significantly improves 
+the scalabity on concurrent connections. Our experiments show that now 
+UDT can easily support 100K+ connections via a single UDP port on a 
+commodity server (buffer size needs to be reduced accordingly). Thanks 
+every UDT user for your continuing support. </p>
+          </td>
+		  
+          <td class="storyLeft" width="39%">
+           	  <p id="p7eq3"> <a class="capsule">June 14 , 2010: A High Performance Data Distribution and Sharing Solution with Sector </a>We invite you to try <a href="http://sector.sourceforge.net/" target="_blank">Sector</a>
+ as your data distribution and sharing platform. Unlike FTP and most 
+commercial applications, Sector can provide a uniform namespace over 
+multiple servers, even 1000s. Meanwhile, users can mount the client side
+ as a local file system directory so that it is completely transparent. 
+All data transfer between servers and clients is on top of UDT. You can 
+follow this <a href="http://verycloud.wordpress.com/2010/06/14/a-high-performance-data-distribution-and-sharing-solution-with-sector/" target="_blank">blog</a> to set up the system. </p>
+          </td>		
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  
+  </div> 
+  <!--contentframe-->
+
+<div id="siteInfo">
+  <a href="http://udt.sourceforge.net/index.html">Home</a> | <a href="http://udt.sourceforge.net/support.html">Contact Us</a> | © 2011 The UDT Team. All rights reserved.
+</div>
+
+</div>
+<!--end pagecell1-->
+
+<script src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2609373-1";
+urchinTracker();
+</script>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=4815884; 
+var sc_invisible=1; 
+var sc_partition=54; 
+var sc_click_stat=1; 
+var sc_security="72933f67"; 
+</script>
+
+<script type="text/javascript" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/counter.js"></script><noscript><div
+class="statcounter"><a title="web statistics"
+href="http://www.statcounter.com/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/4815884/0/72933f67/1/"
+alt="web statistics" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+
+
+
+<iframe tabindex="-1" style="width: 1px; height: 1px; position: absolute; top: -100px;" src="UDT%20%20Breaking%20the%20Data%20Transfer%20Bottleneck_files/postmessageRelay.htm" id="oauth2relay427147348" name="oauth2relay427147348"></iframe><iframe style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: medium none;" allowfullscreen="true" allowtransparency="true" scrolling="no" id="rufous-sandbox" frameborder="0"></iframe></body></html>
