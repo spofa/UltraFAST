@@ -33,8 +33,10 @@ $RECYCLE.BIN/
 x64/
 x86/
 TempPE/
-*.dll
-*.exe
+# No dll/exe/pdb (debug/release/bin/obj already excluded)
+#*.dll
+#*.exe
+#*.pdb
 *.cache
 *.log
 
