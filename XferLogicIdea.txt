@@ -1,0 +1,10 @@
+: If a client disconnects from a given server and subsequently reconnects to that same server, the state of the user interface is preserved. 
+: The display side of the protocol is based around a single graphics primitive: “put a rectangle of pixel data at a given x,y position”. 
+: However, allowing various different encodings for the pixel data gives us a large degree of flexibility in how to trade off various parameters such as network bandwidth, client drawing speed and server processing speed.
+: A sequence of these rectangles makes a framebuffer update (or simply update)
+: An update represents a change from one valid framebuffer state to another, so in some ways is similar to a frame of video.
+: The rectangles in an update are usually disjoint but this is not necessarily the case.
+: The update protocol is demand-driven by the client. That is, an update is only sent
+from the server to the client in response to an explicit request from the client. 
+: This gives the protocol an adaptive quality. The slower the client and the network are, the lower the rate of updates becomes. 
+: With a slow client and/or network, transient states of the framebuffer can be ignored, resulting in less network traffic and less drawing for the client.
