@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="UDPMediater.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ApplicationName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">UDPXfer</Value>
+    </Setting>
+    <Setting Name="ListenPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">14242</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
